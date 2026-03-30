@@ -402,7 +402,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="kpi-card blue"><div class="kpi-ico">⛽</div><div class="kpi-val blue" id="d-fuel">0</div><div class="kpi-lbl">تكلفة الوقود</div><div class="kpi-sub" id="d-fuel-sub"></div></div>
       <div class="kpi-card green"><div class="kpi-ico">🚛</div><div class="kpi-val green" id="d-trips">0</div><div class="kpi-lbl">تكلفة النقلات</div><div class="kpi-sub" id="d-trips-sub"></div></div>
       <div class="kpi-card orange"><div class="kpi-ico">🪨</div><div class="kpi-val orange" id="d-crush">0</div><div class="kpi-lbl">تكلفة الكسارات</div><div class="kpi-sub" id="d-crush-sub"></div></div>
-      <div class="kpi-card red"><div class="kpi-ico">🧾</div><div class="kpi-val red" id="d-inv">0</div><div class="kpi-lbl">إجمالي الفواتير</div><div class="kpi-sub" id="d-inv-sub"></div></div>
+
       <div class="kpi-card purple"><div class="kpi-ico">🚜</div><div class="kpi-val purple" id="d-rent">0</div><div class="kpi-lbl">تكلفة المعدات</div><div class="kpi-sub" id="d-rent-sub"></div></div>
       <div class="kpi-card blue"><div class="kpi-ico">🔩</div><div class="kpi-val blue" id="d-maint">0</div><div class="kpi-lbl">تكلفة الصيانة</div><div class="kpi-sub" id="d-maint-sub"></div></div>
     </div>
@@ -443,7 +443,6 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="quick-btn" onclick="openModal('m-crusher')"><div class="qico">🪨</div><div class="qlbl">كسارة</div></div>
       <div class="quick-btn" onclick="openModal('m-rental')"><div class="qico">🚜</div><div class="qlbl">استئجار معدة</div></div>
       <div class="quick-btn" onclick="openModal('m-maint')"><div class="qico">🔩</div><div class="qlbl">صيانة معدة</div></div>
-      <div class="quick-btn" onclick="openModal('m-inv')"><div class="qico">🧾</div><div class="qlbl">فاتورة</div></div>
     </div>
     <div class="sec-hdr"><span class="sec-title">📋 آخر الأنشطة اليوم</span></div>
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:.75rem"><div id="recent"></div></div>
@@ -463,7 +462,6 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
       <button class="tab-btn" onclick="switchTab('trips',this)">🚛 نقلات</button>
       <button class="tab-btn" onclick="switchTab('crushers',this)">🪨 كسارات</button>
       <button class="tab-btn" onclick="switchTab('rentals',this)">🚜 معدات</button>
-      <button class="tab-btn" onclick="switchTab('invoices',this)">🧾 فواتير</button>
       <button class="tab-btn" onclick="switchTab('maintenance',this)">🔩 صيانة</button>
     </div>
     <div id="ops-content"></div>
@@ -535,7 +533,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
   </div>
 </div>
 
-<div class="modal-overlay" id="m-inv"><div class="modal"><div class="modal-handle"></div><div class="modal-title">🧾 تسجيل فاتورة</div><div class="form-group"><label class="form-label">نوع الفاتورة</label><select class="fs" id="it"><option>وقود</option><option>مواد بناء</option><option>صيانة معدات</option><option>نقل وشحن</option><option>كسارة</option><option>معدات مستأجرة</option><option>أدوات وعدد</option><option>أخرى</option></select></div><div class="form-group"><label class="form-label">اسم المورد</label><input class="fi" id="is" placeholder="اسم المورد أو الشركة"/></div><div class="form-group"><label class="form-label">المبلغ (₪)</label><input class="fi" type="number" id="ia" placeholder="0"/></div><div class="form-group"><label class="form-label">وصف / ملاحظات</label><textarea class="fta" id="id2" placeholder="تفاصيل الفاتورة..."></textarea></div><div class="fr"><button class="btn btn-ghost" onclick="closeModal('m-inv')">إلغاء</button><button class="btn btn-gold" onclick="addInvoice()">✅ حفظ</button></div></div></div>
+
 
 <div class="modal-overlay" id="m-adduser"><div class="modal"><div class="modal-handle"></div><div class="modal-title">👥 إضافة مستخدم جديد</div><div class="form-group"><label class="form-label">الاسم</label><input class="fi" id="nu-name" placeholder="مثال: محمد أحمد"/></div><div class="form-group"><label class="form-label">اسم المستخدم (للدخول)</label><input class="fi" id="nu-user" placeholder="مثال: mohammed" dir="ltr"/></div><div class="form-group"><label class="form-label">كلمة المرور</label><input class="fi" type="password" id="nu-pass" placeholder="••••••••" dir="ltr"/></div><div class="form-group"><label class="form-label">الصلاحية</label><div style="display:flex;gap:.5rem"><button class="fopt active" id="role-view-btn" onclick="selectRole('viewer')">👁️ عرض فقط</button><button class="fopt" id="role-edit-btn" onclick="selectRole('supervisor')">🔧 مشرف</button></div><input type="hidden" id="nu-role" value="viewer"/></div><div class="fr"><button class="btn btn-ghost" onclick="closeModal('m-adduser')">إلغاء</button><button class="btn btn-gold" onclick="addUser()">✅ حفظ</button></div></div></div>
 
@@ -580,7 +578,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 <script>
 // ── STATE ──
 let CU=null,DB=null,REF=null,PUSH=null,ONVAL=null,REMOVE=null,SET=null,FBReady=false;
-let workers={},advances={},fuel={},trips={},crushers={},invoices={},rentals={},maintenance={};
+let workers={},advances={},fuel={},trips={},crushers={},rentals={},maintenance={};
 let opsTab='advances',selMats={},pendingDel={};
 let viewYear=new Date().getFullYear(),viewMonth=new Date().getMonth();
 let _renderTimer=null;
@@ -694,7 +692,6 @@ function listenAll(){
   listen('fuel',d=>{fuel=d||{};scheduleRender();});
   listen('trips',d=>{trips=d||{};scheduleRender();});
   listen('crushers',d=>{crushers=d||{};scheduleRender();});
-  listen('invoices',d=>{invoices=d||{};scheduleRender();});
   listen('rentals',d=>{rentals=d||{};scheduleRender();});
   listen('maintenance',d=>{maintenance=d||{};scheduleRender();});
   listen('users',d=>{
@@ -710,7 +707,6 @@ function loadLocal(){
   fuel=JSON.parse(localStorage.getItem('al3f')||'{}');
   trips=JSON.parse(localStorage.getItem('al3t')||'{}');
   crushers=JSON.parse(localStorage.getItem('al3cr')||'{}');
-  invoices=JSON.parse(localStorage.getItem('al3i')||'{}');
   rentals=JSON.parse(localStorage.getItem('al3r')||'{}');
   maintenance=JSON.parse(localStorage.getItem('al3m')||'{}');
   renderAll();
@@ -759,7 +755,6 @@ function renderDashboard(){
   const mFuel=monthItems(fuel,y,m);
   const mTrips=monthItems(trips,y,m);
   const mCrush=monthItems(crushers,y,m);
-  const mInv=monthItems(invoices,y,m);
   const mRent=monthItems(rentals,y,m);
   const mMaint=monthItems(maintenance,y,m);
 
@@ -769,11 +764,11 @@ function renderDashboard(){
   const tTrips=mTrips.reduce((s,x)=>s+(+x.cost||0),0);
   const tTripsCnt=mTrips.reduce((s,x)=>s+(+x.count||1),0);
   const tCrush=mCrush.reduce((s,x)=>s+(+x.cost||0),0);
-  const tInv=mInv.reduce((s,x)=>s+(+x.amount||0),0);
+  const tInv=0;
   const tRent=mRent.reduce((s,x)=>s+(+x.total||(+x.daily*(+x.days||0))||0),0);
   const tMaint=mMaint.reduce((s,x)=>s+(+x.cost||0),0);
   const total=tAdv+tFuel+tTrips+tCrush+tInv+tRent+tMaint;
-  const ops=mAdv.length+mFuel.length+mTrips.length+mCrush.length+mInv.length+mRent.length+mMaint.length;
+  const ops=mAdv.length+mFuel.length+mTrips.length+mCrush.length+mRent.length+mMaint.length;
 
   document.getElementById('d-total').textContent=num(total)+' ₪';
   document.getElementById('d-total-sub').textContent=ops+' عملية مسجلة';
@@ -785,8 +780,6 @@ function renderDashboard(){
   document.getElementById('d-trips-sub').textContent=tTripsCnt+' نقلة';
   document.getElementById('d-crush').textContent=num(tCrush)+' ₪';
   document.getElementById('d-crush-sub').textContent=mCrush.length+' طلب';
-  document.getElementById('d-inv').textContent=num(tInv)+' ₪';
-  document.getElementById('d-inv-sub').textContent=mInv.length+' فاتورة';
   document.getElementById('d-rent').textContent=num(tRent)+' ₪';
   document.getElementById('d-rent-sub').textContent=mRent.length+' معدة';
   const dMEl=document.getElementById('d-maint');
@@ -797,7 +790,6 @@ function renderDashboard(){
     {lbl:'الوقود',val:tFuel,cls:'blue'},
     {lbl:'النقلات',val:tTrips,cls:'green'},
     {lbl:'الكسارات',val:tCrush,cls:'orange'},
-    {lbl:'الفواتير',val:tInv,cls:'red'},
     {lbl:'المعدات',val:tRent,cls:'purple'},
     {lbl:'الصيانة',val:tMaint,cls:'blue'},
   ];
@@ -813,11 +805,10 @@ function renderDashboard(){
     const dFuel=oa(fuel).filter(x=>itemDate(x)===ds);
     const dTrips=oa(trips).filter(x=>itemDate(x)===ds);
     const dCrush=oa(crushers).filter(x=>itemDate(x)===ds);
-    const dInv=oa(invoices).filter(x=>itemDate(x)===ds);
     const dRent=oa(rentals).filter(x=>itemDate(x)===ds);
     const dMaint=oa(maintenance).filter(x=>itemDate(x)===ds);
-    const dayCost=dAdv.reduce((s,x)=>s+(+x.amount||0),0)+dFuel.reduce((s,x)=>s+(+x.cost||0),0)+dTrips.reduce((s,x)=>s+(+x.cost||0),0)+dCrush.reduce((s,x)=>s+(+x.cost||0),0)+dInv.reduce((s,x)=>s+(+x.amount||0),0)+dRent.reduce((s,x)=>s+(+x.total||(+x.daily*(+x.days||0))||0),0)+dMaint.reduce((s,x)=>s+(+x.cost||0),0);
-    const hasAct=dAdv.length||dFuel.length||dTrips.length||dCrush.length||dInv.length||dRent.length||dMaint.length;
+    const dayCost=dAdv.reduce((s,x)=>s+(+x.amount||0),0)+dFuel.reduce((s,x)=>s+(+x.cost||0),0)+dTrips.reduce((s,x)=>s+(+x.cost||0),0)+dCrush.reduce((s,x)=>s+(+x.cost||0),0)+dRent.reduce((s,x)=>s+(+x.total||(+x.daily*(+x.days||0))||0),0)+dMaint.reduce((s,x)=>s+(+x.cost||0),0);
+    const hasAct=dAdv.length||dFuel.length||dTrips.length||dCrush.length||dRent.length||dMaint.length;
     if(hasAct)activeDays++;
     const isToday=ds===todayStr;
     const wkDay=new Date(ds).getDay();
@@ -828,7 +819,6 @@ function renderDashboard(){
         ${dFuel.length?'<div class="day-dot blue"></div>':''}
         ${dTrips.length?'<div class="day-dot green"></div>':''}
         ${dCrush.length?'<div class="day-dot orange"></div>':''}
-        ${dInv.length?'<div class="day-dot red"></div>':''}
         ${dRent.length?'<div class="day-dot purple"></div>':''}
         ${dMaint.length?'<div class="day-dot blue"></div>':''}
         ${!hasAct?'<span style="font-size:.62rem;color:var(--text3)">—</span>':''}
@@ -860,7 +850,6 @@ function showDayDetail(ds){
   const dFuel=oa(fuel).filter(x=>itemDate(x)===ds);
   const dTrips=oa(trips).filter(x=>itemDate(x)===ds);
   const dCrush=oa(crushers).filter(x=>itemDate(x)===ds);
-  const dInv=oa(invoices).filter(x=>itemDate(x)===ds);
   const dRent=oa(rentals).filter(x=>itemDate(x)===ds);
   const dMaint=oa(maintenance).filter(x=>itemDate(x)===ds);
 
@@ -868,11 +857,11 @@ function showDayDetail(ds){
   const tFuel=dFuel.reduce((s,x)=>s+(+x.cost||0),0);
   const tTrip=dTrips.reduce((s,x)=>s+(+x.cost||0),0);
   const tCrush=dCrush.reduce((s,x)=>s+(+x.cost||0),0);
-  const tInv=dInv.reduce((s,x)=>s+(+x.amount||0),0);
+  const tInv=0;
   const tRent=dRent.reduce((s,x)=>s+(+x.total||(+x.daily*(+x.days||0))||0),0);
   const tMaint=dMaint.reduce((s,x)=>s+(+x.cost||0),0);
   const total=tAdv+tFuel+tTrip+tCrush+tInv+tRent+tMaint;
-  const ops=dAdv.length+dFuel.length+dTrips.length+dCrush.length+dInv.length+dRent.length+dMaint.length;
+  const ops=dAdv.length+dFuel.length+dTrips.length+dCrush.length+dRent.length+dMaint.length;
 
   document.getElementById('ddp-sub').textContent=ops?`${ops} عملية · إجمالي ${num(total)} ₪`:'لا توجد عمليات في هذا اليوم';
   document.getElementById('ddp-hero').innerHTML=`
@@ -907,7 +896,6 @@ function showDayDetail(ds){
         <button class="dd-item-del" onclick="confirmDel('maintenance','${x._key}','maintenance','حذف سجل الصيانة؟')">🗑️</button>
       </div>`).join('')+`</div>`;
   }
-  if(dInv.length)html+=`<div class="dd-section-card"><div class="dd-sec-hdr"><span class="dd-sec-lbl">🧾 الفواتير</span><span class="dd-sec-count">${dInv.length} فاتورة · ${num(tInv)} ₪</span></div>`+dInv.map(x=>`<div class="dd-item"><div class="dd-item-ico" style="background:var(--red-dim)">🧾</div><div class="dd-item-body"><div class="dd-item-title">${x.type} · ${x.supplier||'غير محدد'}</div><div class="dd-item-sub">${x.desc||'—'} · ${x.by||'—'}</div></div><div class="dd-item-right"><span class="dd-item-amt" style="color:var(--red2)">-${num(x.amount)} ₪</span><span class="dd-item-time">${fmt(x)}</span></div><button class="dd-item-del" onclick="confirmDel('invoices','${x._key}','invoices','حذف هذه الفاتورة؟')">🗑️</button></div>`).join('')+`</div>`;
 
   document.getElementById('ddp-sections').innerHTML=html;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1042,16 +1030,6 @@ async function addMaintenance(){
   closeModal('m-maint');showToast('✅ تم تسجيل الصيانة','success');
 }
 
-async function addInvoice(){
-  if(!CU.canEdit){showToast('❌ ليس لديك صلاحية','error');return;}
-  const t=document.getElementById('it').value,s=document.getElementById('is').value,a=+document.getElementById('ia').value,d2=document.getElementById('id2').value;
-  if(!a){showToast('❌ أدخل المبلغ','error');return;}
-  const d={type:t,supplier:s,amount:a,desc:d2,date:today()};
-  if(FBReady)await fbAdd('invoices',d);else{d.id=Date.now()+'';invoices[d.id]=d;saveL('i',invoices);renderAll();}
-  document.getElementById('is').value='';document.getElementById('ia').value='';document.getElementById('id2').value='';
-  closeModal('m-inv');showToast('✅ تم تسجيل الفاتورة','success');
-}
-
 // ── DELETE ──
 function confirmDel(path,id,lk,msg){
   if(!CU.canEdit){showToast('❌ ليس لديك صلاحية','error');return;}
@@ -1068,8 +1046,8 @@ async function execDel(){
     try{await REMOVE(REF(DB,path+'/'+id));showToast('✅ تم الحذف','success');}
     catch(e){showToast('❌ فشل الحذف','error');}
   }else{
-    const maps={workers,advances,fuel,trips,crushers,invoices,rentals,maintenance};
-    const keys={workers:'w',advances:'a',fuel:'f',trips:'t',crushers:'cr',invoices:'i',rentals:'r',maintenance:'m'};
+    const maps={workers,advances,fuel,trips,crushers,rentals,maintenance};
+    const keys={workers:'w',advances:'a',fuel:'f',trips:'t',crushers:'cr',rentals:'r',maintenance:'m'};
     if(maps[lk]&&maps[lk][id]){delete maps[lk][id];saveL(keys[lk],maps[lk]);renderAll();showToast('✅ تم الحذف','success');}
   }
 }
@@ -1080,9 +1058,9 @@ function dBtn(path,key,lk,msg){return`<button class="del-btn" onclick="confirmDe
 
 function renderOps(){
   const el=document.getElementById('ops-content');
-  const map={advances,fuel,trips,crushers,invoices,rentals,maintenance};
+  const map={advances,fuel,trips,crushers,rentals,maintenance};
   const arr=oa(map[opsTab]).sort((a,b)=>(b.ts||0)-(a.ts||0));
-  const emp={advances:'💵',fuel:'⛽',trips:'🚛',crushers:'🪨',invoices:'🧾',rentals:'🚜'};
+  const emp={advances:'💵',fuel:'⛽',trips:'🚛',crushers:'🪨',rentals:'🚜'};
   if(!arr.length){el.innerHTML=`<div class="empty-state"><div class="ei">${emp[opsTab]}</div><p>لا توجد سجلات</p></div>`;return;}
   el.innerHTML=arr.map(x=>{
     const k=x._key;
@@ -1092,7 +1070,6 @@ function renderOps(){
     if(opsTab==='crushers'){const ms=Object.entries(x.materials||{}).map(([k2,v])=>`${k2}:${v}`).join('·');return`<div class="li"><div class="li-ico orange">🪨</div><div class="li-body"><div class="li-title">🏭 ${x.name}</div><div class="li-sub">${x.date} ${fmt(x)} · ${ms||'—'} · ${x.by||''}</div></div><div class="li-amt orange">${num(x.cost)} ₪</div>${dBtn('crushers',k,'crushers','حذف طلب كسارة '+x.name+'؟')}</div>`;}
     if(opsTab==='rentals'){const rc=+x.total||(+x.daily*(+x.days||0))||0;return`<div class="li"><div class="li-ico purple">🚜</div><div class="li-body"><div class="li-title">${x.name} · ${x.owner||'—'}</div><div class="li-sub">${x.start||x.date} → ${x.end||'—'} · ${x.days||0} يوم · ${x.by||''}</div></div><div class="li-amt purple">-${num(rc)} ₪</div>${dBtn('rentals',k,'rentals','حذف سجل المعدة؟')}</div>`;}
     if(opsTab==='maintenance')return`<div class="li"><div class="li-ico blue">🔧</div><div class="li-body"><div class="li-title">${x.equip} · ${x.type}</div><div class="li-sub">${x.date} ${fmt(x)} · ${x.desc||''} · ${x.shop||''} · ${x.by||''}</div>${x.parts?`<div style="font-size:.65rem;color:var(--text2)">قطع: ${x.parts}</div>`:''}</div><div class="li-amt blue">-${num(x.cost)} ₪</div>${dBtn('maintenance',k,'maintenance','حذف سجل الصيانة؟')}</div>`;
-    if(opsTab==='invoices')return`<div class="li"><div class="li-ico red">🧾</div><div class="li-body"><div class="li-title">${x.type} · ${x.supplier||'غير محدد'}</div><div class="li-sub">${x.date} ${fmt(x)} · ${x.desc||''}</div></div><div class="li-amt red">-${num(x.amount)} ₪</div>${dBtn('invoices',k,'invoices','حذف هذه الفاتورة؟')}</div>`;
   }).join('');
 }
 
@@ -1105,7 +1082,6 @@ function renderRecent(){
     ...todayItems(crushers).map(x=>{return{ico:'🪨',icoCls:'orange',t:`كسارة · ${x.name}`,s:fmt(x),a:`${num(x.cost)} ₪`,c:'orange',ts:x.ts||0}}),
     ...todayItems(rentals).map(x=>{const rc=+x.total||(+x.daily*(+x.days||0))||0;return{ico:'🚜',icoCls:'purple',t:`معدة · ${x.name}`,s:fmt(x),a:`-${num(rc)} ₪`,c:'purple',ts:x.ts||0}}),
     ...todayItems(maintenance).map(x=>{return{ico:'🔧',icoCls:'blue',t:`صيانة · ${x.equip}`,s:fmt(x),a:`-${num(x.cost)} ₪`,c:'blue',ts:x.ts||0}}),
-    ...todayItems(invoices).map(x=>{return{ico:'🧾',icoCls:'red',t:`${x.type} · ${x.supplier||''}`,s:fmt(x),a:`-${num(x.amount)} ₪`,c:'red',ts:x.ts||0}}),
   ].sort((a,b)=>b.ts-a.ts).slice(0,8);
   const el=document.getElementById('recent');
   if(!all.length){el.innerHTML='<div class="empty-state"><div class="ei">📭</div><p>لا يوجد نشاط اليوم بعد</p></div>';return;}
