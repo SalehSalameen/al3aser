@@ -815,7 +815,6 @@ function renderDashboard(){
     const dCrush=oa(crushers).filter(x=>itemDate(x)===ds);
     const dInv=oa(invoices).filter(x=>itemDate(x)===ds);
     const dRent=oa(rentals).filter(x=>itemDate(x)===ds);
-  const dMaint=oa(maintenance).filter(x=>itemDate(x)===ds);
     const dMaint=oa(maintenance).filter(x=>itemDate(x)===ds);
     const dayCost=dAdv.reduce((s,x)=>s+(+x.amount||0),0)+dFuel.reduce((s,x)=>s+(+x.cost||0),0)+dTrips.reduce((s,x)=>s+(+x.cost||0),0)+dCrush.reduce((s,x)=>s+(+x.cost||0),0)+dInv.reduce((s,x)=>s+(+x.amount||0),0)+dRent.reduce((s,x)=>s+(+x.total||(+x.daily*(+x.days||0))||0),0)+dMaint.reduce((s,x)=>s+(+x.cost||0),0);
     const hasAct=dAdv.length||dFuel.length||dTrips.length||dCrush.length||dInv.length||dRent.length||dMaint.length;
