@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07090f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="العصر">
+<title>شركة العصر للحفريات</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Readex+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+  const app = initializeApp({
+    apiKey:"AIzaSyBsyAyFob6SyIPjJuRcVJ83pb5lH6Hb4Cw",
+    authDomain:"al3aser-company.firebaseapp.com",
+    projectId:"al3aser-company",
+    databaseURL:"https://al3aser-company-default-rtdb.europe-west1.firebasedatabase.app",
+    storageBucket:"al3aser-company.firebasestorage.app",
+    messagingSenderId:"188963634936",
+    appId:"1:188963634936:web:1ed0900b5d8ccfd9d1c50d"
+  });
+  const db=getDatabase(app);
+  window._db=db;window._ref=ref;window._push=push;window._onValue=onValue;window._remove=remove;
+  window.dispatchEvent(new Event('firebase-ready'));
+</script>
+
+<style>
+:root{
+  --bg:#07090f;--bg2:#0d1018;--bg3:#131720;
+  --surface:#161b27;--surface2:#1c2233;--surface3:#212840;
+  --border:#1e2535;--border2:#252d40;--border3:#2d3650;
+  --gold:#d4a843;--gold2:#f0c060;--gold3:#b8922e;--gold-dim:rgba(212,168,67,0.12);
+  --blue:#3d7fff;--blue2:#5a9aff;--blue-dim:rgba(61,127,255,0.12);
+  --green:#1db87a;--green2:#25d48e;--green-dim:rgba(29,184,122,0.12);
+  --red:#e05252;--red2:#ff6b6b;--red-dim:rgba(224,82,82,0.12);
+  --orange:#e07820;--orange2:#f09040;--orange-dim:rgba(224,120,32,0.12);
+  --purple:#7c5cbf;--purple2:#9b7adf;--purple-dim:rgba(124,92,191,0.12);
+  --text:#e8ecf5;--text2:#8896b0;--text3:#4a5568;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow-x:hidden}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;transition:opacity .6s}
+.splash-logo{width:90px;height:90px;border-radius:24px;background:linear-gradient(135deg,var(--gold3),var(--gold),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:2.5rem;box-shadow:0 0 40px rgba(212,168,67,0.35);animation:float 2s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.splash-bar{width:180px;height:2px;background:var(--border2);border-radius:2px;overflow:hidden;margin-top:.5rem}
+.splash-prog{height:100%;background:linear-gradient(90deg,var(--gold3),var(--gold2));animation:load 2.5s ease forwards}
+@keyframes load{from{width:0}to{width:100%}}
+
+/* LOGIN */
+#login-screen{display:none;min-height:100vh;align-items:center;justify-content:center;padding:1.5rem;background:var(--bg);background-image:radial-gradient(ellipse 80% 50% at 50% -5%,rgba(212,168,67,0.07) 0%,transparent 70%)}
+.login-wrap{width:100%;max-width:380px}
+.login-brand{text-align:center;margin-bottom:2rem}
+.login-icon{width:76px;height:76px;border-radius:20px;margin:0 auto .85rem;background:linear-gradient(135deg,var(--gold3),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:2rem;box-shadow:0 8px 32px rgba(212,168,67,0.28)}
+.login-brand h1{font-family:'Readex Pro',sans-serif;font-size:1.35rem;font-weight:700;color:var(--gold);margin-bottom:.2rem}
+.login-brand p{font-size:.8rem;color:var(--text2)}
+.login-card{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:1.75rem;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.login-card h2{font-size:.9rem;font-weight:700;margin-bottom:1.25rem;color:var(--text2);letter-spacing:.5px}
+
+/* TOPBAR */
+#topbar{position:sticky;top:0;z-index:100;background:rgba(13,16,24,.93);border-bottom:1px solid var(--border);backdrop-filter:blur(16px);padding:.65rem 1rem;display:flex;align-items:center;justify-content:space-between}
+.tb-brand{display:flex;align-items:center;gap:.55rem}
+.tb-ico{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--gold3),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+.tb-name{font-family:'Readex Pro',sans-serif;font-weight:700;font-size:.9rem;color:var(--gold)}
+.tb-right{display:flex;align-items:center;gap:.45rem}
+.conn-pill{display:inline-flex;align-items:center;gap:.28rem;background:var(--green-dim);color:var(--green2);padding:.18rem .55rem;border-radius:20px;font-size:.65rem;font-weight:700;border:1px solid rgba(29,184,122,0.2)}
+.dot-live{width:5px;height:5px;border-radius:50%;background:var(--green2);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.tb-date{font-size:.7rem;color:var(--text2);background:var(--surface);padding:.18rem .55rem;border-radius:7px;border:1px solid var(--border)}
+.ico-btn{background:none;border:none;color:var(--text2);cursor:pointer;font-size:1rem;padding:.28rem;border-radius:7px}
+
+/* NAV */
+#bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(13,16,24,.95);border-top:1px solid var(--border);backdrop-filter:blur(16px);display:flex;padding:.35rem .4rem calc(.35rem + env(safe-area-inset-bottom));gap:.2rem}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:.12rem;padding:.45rem .2rem;background:none;border:none;color:var(--text3);cursor:pointer;border-radius:11px;transition:all .2s;font-family:'Cairo',sans-serif}
+.nav-btn .ni{font-size:1.2rem;transition:transform .2s}
+.nav-btn .nl{font-size:.58rem;font-weight:600}
+.nav-btn.active{color:var(--gold);background:rgba(212,168,67,0.07)}
+.nav-btn.active .ni{transform:translateY(-1px)}
+
+/* PAGES */
+.page{display:none;padding:.85rem;padding-bottom:82px}
+.page.active{display:block;animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── DASHBOARD ── */
+.month-selector{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:.65rem 1rem;margin-bottom:.85rem}
+.month-nav{background:none;border:none;color:var(--text2);cursor:pointer;font-size:1.1rem;padding:.2rem .4rem;border-radius:7px;transition:all .2s}
+.month-nav:hover{color:var(--gold);background:var(--gold-dim)}
+.month-label{font-family:'Readex Pro',sans-serif;font-weight:700;font-size:1rem;color:var(--text)}
+.month-sub{font-size:.7rem;color:var(--text2);text-align:center;margin-top:.1rem}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.85rem}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1rem;position:relative;overflow:hidden;transition:border-color .2s}
+.kpi-card::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;opacity:.06}
+.kpi-card.gold::before{background:var(--gold)}
+.kpi-card.blue::before{background:var(--blue)}
+.kpi-card.green::before{background:var(--green)}
+.kpi-card.red::before{background:var(--red)}
+.kpi-card.orange::before{background:var(--orange)}
+.kpi-card.purple::before{background:var(--purple)}
+.kpi-ico{font-size:1.4rem;margin-bottom:.4rem}
+.kpi-val{font-family:'Readex Pro',sans-serif;font-size:1.5rem;font-weight:700;line-height:1}
+.kpi-val.gold{color:var(--gold)}
+.kpi-val.blue{color:var(--blue2)}
+.kpi-val.green{color:var(--green2)}
+.kpi-val.red{color:var(--red2)}
+.kpi-val.orange{color:var(--orange2)}
+.kpi-val.purple{color:var(--purple2)}
+.kpi-lbl{font-size:.72rem;color:var(--text2);margin-top:.3rem;font-weight:600}
+.kpi-sub{font-size:.65rem;color:var(--text3);margin-top:.1rem}
+
+/* TOTAL CARD */
+.total-card{background:linear-gradient(135deg,#0f1528,#1a2440,#0f1528);border:1px solid rgba(212,168,67,0.2);border-radius:16px;padding:1.1rem 1.25rem;margin-bottom:.85rem;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
+.total-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 0% 50%,rgba(212,168,67,0.05),transparent 60%)}
+.total-lbl{font-size:.8rem;color:var(--text2);font-weight:600;margin-bottom:.25rem}
+.total-val{font-family:'Readex Pro',sans-serif;font-size:1.9rem;font-weight:700;color:var(--gold)}
+.total-ico{font-size:2.8rem;opacity:.4}
+
+/* SECTION */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem}
+.sec-title{font-size:.78rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:.4rem}
+.sec-badge{background:var(--surface2);color:var(--text2);font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:8px}
+.sec-action{font-size:.75rem;color:var(--gold);background:var(--gold-dim);border:1px solid rgba(212,168,67,0.2);padding:.28rem .75rem;border-radius:20px;cursor:pointer;font-family:'Cairo',sans-serif;font-weight:700;transition:all .2s}
+
+/* PROGRESS BAR */
+.progress-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1rem;margin-bottom:.85rem}
+.prog-title{font-size:.82rem;font-weight:700;margin-bottom:.85rem;display:flex;align-items:center;gap:.4rem}
+.prog-row{display:flex;align-items:center;gap:.65rem;margin-bottom:.6rem}
+.prog-row:last-child{margin-bottom:0}
+.prog-label{font-size:.75rem;color:var(--text2);min-width:70px;font-weight:600}
+.prog-bar-bg{flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.prog-bar{height:100%;border-radius:3px;transition:width .6s ease}
+.prog-bar.gold{background:linear-gradient(90deg,var(--gold3),var(--gold2))}
+.prog-bar.blue{background:linear-gradient(90deg,var(--blue),var(--blue2))}
+.prog-bar.green{background:linear-gradient(90deg,var(--green),var(--green2))}
+.prog-bar.orange{background:linear-gradient(90deg,var(--orange),var(--orange2))}
+.prog-bar.red{background:linear-gradient(90deg,var(--red),var(--red2))}
+.prog-val{font-family:'Readex Pro',sans-serif;font-size:.72rem;font-weight:700;min-width:55px;text-align:left;color:var(--text)}
+
+/* DAILY LOG TABLE */
+.day-table{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:.85rem}
+.day-table-hdr{display:grid;grid-template-columns:70px 1fr 80px 70px;gap:.5rem;padding:.6rem .85rem;background:var(--surface2);border-bottom:1px solid var(--border2)}
+.day-table-hdr span{font-size:.65rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.4px}
+.day-row{display:grid;grid-template-columns:70px 1fr 80px 70px;gap:.5rem;padding:.6rem .85rem;border-bottom:1px solid var(--border);align-items:center;transition:background .15s;cursor:pointer}
+.day-row:last-child{border-bottom:none}
+.day-row:hover{background:var(--surface2)}
+.day-row.today{background:rgba(212,168,67,0.04);border-right:2px solid var(--gold)}
+.day-num{font-family:'Readex Pro',sans-serif;font-size:.82rem;font-weight:700}
+.day-acts{display:flex;gap:.2rem;flex-wrap:wrap}
+.day-dot{width:7px;height:7px;border-radius:50%}
+.day-dot.gold{background:var(--gold)}
+.day-dot.blue{background:var(--blue2)}
+.day-dot.green{background:var(--green2)}
+.day-dot.orange{background:var(--orange2)}
+.day-dot.red{background:var(--red2)}
+.day-cost{font-family:'Readex Pro',sans-serif;font-size:.78rem;font-weight:700;color:var(--red2)}
+.day-badge{font-size:.6rem;font-weight:700;padding:.15rem .4rem;border-radius:5px;background:var(--green-dim);color:var(--green2)}
+.day-badge.empty{background:var(--bg3);color:var(--text3)}
+
+/* WORKER TABLE */
+.w-table{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:.85rem}
+.w-table-hdr{display:grid;grid-template-columns:1fr 70px 70px 80px;gap:.4rem;padding:.6rem .85rem;background:var(--surface2);border-bottom:1px solid var(--border2)}
+.w-table-hdr span{font-size:.62rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.4px}
+.w-row{display:grid;grid-template-columns:1fr 70px 70px 80px;gap:.4rem;padding:.65rem .85rem;border-bottom:1px solid var(--border);align-items:center}
+.w-row:last-child{border-bottom:none}
+.w-name-cell{display:flex;align-items:center;gap:.45rem}
+.w-av{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--gold3),var(--gold2));display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#000;flex-shrink:0}
+.w-nm{font-size:.8rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.w-rl{font-size:.62rem;color:var(--text2)}
+.w-cell{font-family:'Readex Pro',sans-serif;font-size:.78rem;font-weight:700}
+.w-cell.gold{color:var(--gold)}
+.w-cell.red{color:var(--red2)}
+.w-cell.green{color:var(--green2)}
+
+/* OPS TABS */
+.tabs{display:flex;background:var(--bg3);border-radius:11px;padding:.18rem;margin-bottom:.85rem;gap:.18rem}
+.tab-btn{flex:1;padding:.45rem .2rem;border:none;background:none;color:var(--text2);font-family:'Cairo',sans-serif;font-size:.7rem;font-weight:700;border-radius:9px;cursor:pointer;transition:all .2s}
+.tab-btn.active{background:var(--surface2);color:var(--gold);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+
+/* LIST */
+.li{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.75rem .9rem;margin-bottom:.4rem;display:flex;align-items:center;gap:.6rem;transition:border-color .15s}
+.li:hover{border-color:var(--border2)}
+.li-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+.li-ico.gold{background:var(--gold-dim)}
+.li-ico.blue{background:var(--blue-dim)}
+.li-ico.green{background:var(--green-dim)}
+.li-ico.red{background:var(--red-dim)}
+.li-ico.orange{background:var(--orange-dim)}
+.li-body{flex:1;min-width:0}
+.li-title{font-weight:700;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li-sub{font-size:.7rem;color:var(--text2);margin-top:.1rem}
+.li-amt{font-family:'Readex Pro',sans-serif;font-weight:700;font-size:.85rem;flex-shrink:0}
+.li-amt.red{color:var(--red2)}
+.li-amt.blue{color:var(--blue2)}
+.li-amt.gold{color:var(--gold)}
+.li-amt.green{color:var(--green2)}
+.li-amt.orange{color:var(--orange2)}
+.del-btn{width:28px;height:28px;border-radius:7px;border:none;background:var(--red-dim);color:var(--red2);font-size:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.del-btn:hover{background:rgba(224,82,82,.25)}
+
+/* QUICK */
+.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem;margin-bottom:.85rem}
+.quick-btn{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:.9rem .4rem;display:flex;flex-direction:column;align-items:center;gap:.35rem;cursor:pointer;transition:all .2s;text-align:center}
+.quick-btn:active{transform:scale(.95);background:var(--surface2)}
+.quick-btn .qico{font-size:1.5rem}
+.quick-btn .qlbl{font-size:.68rem;font-weight:700;color:var(--text2)}
+
+/* WORKER CARD */
+.wcard{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:.9rem;margin-bottom:.6rem}
+.wcard-hdr{display:flex;align-items:center;gap:.7rem;margin-bottom:.7rem}
+.wavatar{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--gold3),var(--gold2));display:flex;align-items:center;justify-content:center;font-family:'Readex Pro',sans-serif;font-weight:700;font-size:1.05rem;color:#000;flex-shrink:0}
+.wstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.45rem}
+.wstat{background:var(--bg3);border-radius:9px;padding:.5rem;text-align:center}
+.wsv{font-family:'Readex Pro',sans-serif;font-weight:700;font-size:.88rem}
+.wsl{font-size:.58rem;color:var(--text2);margin-top:.1rem}
+.wsv.gold{color:var(--gold)}
+.wsv.red{color:var(--red2)}
+.wsv.green{color:var(--green2)}
+
+/* FORMS */
+.form-group{margin-bottom:.8rem}
+.form-label{font-size:.78rem;color:var(--text2);margin-bottom:.3rem;display:block;font-weight:600;letter-spacing:.3px}
+.fi,.fs,.fta{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:.65rem .85rem;color:var(--text);font-family:'Cairo',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s,box-shadow .2s}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.07)}
+.fs option{background:var(--bg3)}
+.fta{resize:vertical;min-height:70px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+
+/* BUTTONS */
+.btn{width:100%;padding:.75rem;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.4rem}
+.btn-gold{background:linear-gradient(135deg,var(--gold3),var(--gold2));color:#000}
+.btn-gold:active{transform:scale(.98)}
+.btn-ghost{background:var(--bg3);color:var(--text);border:1px solid var(--border2)}
+.btn-danger{background:linear-gradient(135deg,#c0392b,var(--red2));color:#fff}
+.btn-sm{width:auto;padding:.3rem .8rem;font-size:.75rem;border-radius:8px}
+
+/* FUEL TOGGLE */
+.ftoggle{display:flex;gap:.45rem;margin-bottom:.8rem}
+.fopt{flex:1;padding:.55rem;border:1.5px solid var(--border2);border-radius:9px;background:none;color:var(--text2);font-family:'Cairo',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;transition:all .2s}
+.fopt.active{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:none;align-items:flex-end;backdrop-filter:blur(6px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:22px 22px 0 0;padding:1.2rem;width:100%;max-height:88vh;overflow-y:auto;animation:slideUp .27s cubic-bezier(.34,1.2,.64,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 1.2rem}
+.modal-title{font-family:'Readex Pro',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:1.2rem;text-align:center}
+
+/* CONFIRM */
+.confirm-body{background:var(--bg2);border:1px solid var(--red);border-radius:22px 22px 0 0;padding:1.5rem;width:100%;animation:slideUp .27s cubic-bezier(.34,1.2,.64,1)}
+
+/* DAY DETAIL MODAL */
+.day-detail-date{font-family:'Readex Pro',sans-serif;font-size:1.1rem;font-weight:700;color:var(--gold);text-align:center;margin-bottom:1rem}
+.dd-section{margin-bottom:.85rem}
+.dd-sec-title{font-size:.72rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:.5rem;padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+
+/* MAT PICKER */
+.mat-picker{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.8rem}
+.mat-chip{padding:.38rem .7rem;border:1.5px solid var(--border2);border-radius:8px;background:none;color:var(--text2);font-family:'Cairo',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .2s}
+.mat-chip.sel{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+.cr-mat{display:inline-flex;align-items:center;gap:.25rem;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:.3rem .55rem;font-size:.72rem;font-weight:600}
+.cr-mat .mq{color:var(--gold);font-family:'Readex Pro',sans-serif;font-weight:700}
+
+/* TOAST */
+#toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:.6rem 1.2rem;border-radius:40px;font-weight:700;font-size:.82rem;z-index:500;opacity:0;transition:all .3s;white-space:nowrap;box-shadow:0 4px 24px rgba(0,0,0,.4)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.success{background:var(--green-dim);border-color:rgba(29,184,122,.3);color:var(--green2)}
+#toast.error{background:var(--red-dim);border-color:rgba(224,82,82,.3);color:var(--red2)}
+
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.empty-state{text-align:center;padding:2.5rem 1rem}
+.empty-state .ei{font-size:2.2rem;margin-bottom:.6rem;opacity:.35}
+.empty-state p{color:var(--text2);font-size:.82rem}
+.divider{height:1px;background:var(--border);margin:.6rem 0}
+
+/* ── DAY DETAIL PAGE ── */
+#page-daydetail{background:var(--bg)}
+.dd-topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(13,16,24,.95);border-bottom:1px solid var(--border);
+  backdrop-filter:blur(16px);
+  padding:.65rem 1rem;
+  display:flex;align-items:center;gap:.75rem;
+}
+.dd-back{
+  width:34px;height:34px;border-radius:9px;border:none;
+  background:var(--surface2);color:var(--text);
+  font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .2s;
+}
+.dd-back:active{transform:scale(.93)}
+.dd-title-wrap{flex:1}
+.dd-page-title{font-family:'Readex Pro',sans-serif;font-size:.95rem;font-weight:700;color:var(--gold)}
+.dd-page-sub{font-size:.68rem;color:var(--text2);margin-top:.05rem}
+
+.dd-hero{
+  background:linear-gradient(135deg,#0f1830,#1a2440,#0f1830);
+  border:1px solid var(--border2);border-radius:18px;
+  padding:1.1rem;margin-bottom:.85rem;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;
+}
+.dd-kpi{text-align:center;padding:.5rem;background:rgba(255,255,255,.03);border-radius:10px}
+.dd-kpi-val{font-family:'Readex Pro',sans-serif;font-size:1.2rem;font-weight:700}
+.dd-kpi-lbl{font-size:.62rem;color:var(--text2);margin-top:.15rem}
+
+.dd-section-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;margin-bottom:.75rem;overflow:hidden;
+}
+.dd-sec-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.7rem .9rem;background:var(--surface2);
+  border-bottom:1px solid var(--border);
+}
+.dd-sec-lbl{font-size:.78rem;font-weight:700;display:flex;align-items:center;gap:.4rem}
+.dd-sec-count{
+  font-family:'Readex Pro',sans-serif;font-size:.7rem;font-weight:700;
+  background:var(--bg3);padding:.18rem .5rem;border-radius:8px;color:var(--text2);
+}
+.dd-item{
+  display:flex;align-items:center;gap:.65rem;
+  padding:.7rem .9rem;border-bottom:1px solid var(--border);
+  transition:background .15s;
+}
+.dd-item:last-child{border-bottom:none}
+.dd-item:active{background:var(--surface2)}
+.dd-item-ico{
+  width:34px;height:34px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.95rem;flex-shrink:0;
+}
+.dd-item-body{flex:1;min-width:0}
+.dd-item-title{font-size:.85rem;font-weight:700}
+.dd-item-sub{font-size:.7rem;color:var(--text2);margin-top:.1rem}
+.dd-item-right{display:flex;flex-direction:column;align-items:flex-end;gap:.25rem;flex-shrink:0}
+.dd-item-amt{font-family:'Readex Pro',sans-serif;font-weight:700;font-size:.88rem}
+.dd-item-time{font-size:.62rem;color:var(--text3)}
+.dd-item-del{
+  width:26px;height:26px;border-radius:7px;border:none;
+  background:var(--red-dim);color:var(--red2);
+  font-size:.75rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;flex-shrink:0;
+}
+.dd-mat-list{display:flex;flex-wrap:wrap;gap:.28rem;margin-top:.35rem}
+.dd-mat-chip{
+  background:var(--bg3);border:1px solid var(--border2);
+  border-radius:6px;padding:.22rem .5rem;
+  font-size:.68rem;font-weight:600;
+  display:inline-flex;align-items:center;gap:.2rem;
+}
+.dd-mat-qty{color:var(--gold);font-family:'Readex Pro',sans-serif;font-weight:700}
+.dd-no-ops{
+  padding:2rem;text-align:center;
+}
+.dd-no-ops .ei{font-size:2.5rem;opacity:.3;margin-bottom:.5rem}
+.dd-no-ops p{color:var(--text2);font-size:.82rem}
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="splash-logo">⚙️</div>
+  <div style="font-family:'Readex Pro',sans-serif;font-size:1.5rem;font-weight:700;color:var(--gold)">شركة العصر للحفريات</div>
+  <div style="font-size:.82rem;color:var(--text2)">نظام إدارة العمليات</div>
+  <div class="splash-bar"><div class="splash-prog"></div></div>
+</div>
+
+<div id="login-screen">
+  <div class="login-wrap">
+    <div class="login-brand">
+      <div class="login-icon">⚙️</div>
+      <h1>شركة العصر للحفريات</h1>
+      <p>نظام إدارة العمليات الميدانية</p>
+    </div>
+    <div class="login-card">
+      <h2>تسجيل الدخول</h2>
+      <div class="form-group"><label class="form-label">اسم المستخدم</label><input class="fi" id="lu" placeholder="admin أو supervisor"/></div>
+      <div class="form-group"><label class="form-label">كلمة المرور</label><input class="fi" type="password" id="lp" placeholder="••••••••"/></div>
+      <button class="btn btn-gold" onclick="doLogin()" style="margin-top:.2rem">دخول ←</button>
+      <p style="text-align:center;color:var(--text2);font-size:.7rem;margin-top:.85rem">admin / admin123 · supervisor / super123 · viewer / view123</p>
+    </div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <div id="topbar">
+    <div class="tb-brand">
+      <div class="tb-ico">⚙️</div>
+      <span class="tb-name">العصر</span>
+    </div>
+    <div class="tb-right">
+      <span id="db-status"></span>
+      <span id="tb-date" class="tb-date"></span>
+      <span id="tu" style="font-size:.72rem;color:var(--text2)"></span>
+      <button class="ico-btn" onclick="logout()">🚪</button>
+    </div>
+  </div>
+
+  <!-- ══ DASHBOARD ══ -->
+  <div class="page active" id="page-dash">
+    <!-- Month Selector -->
+    <div class="month-selector">
+      <button class="month-nav" onclick="changeMonth(-1)">◀</button>
+      <div style="text-align:center">
+        <div class="month-label" id="month-label"></div>
+        <div class="month-sub" id="month-sub"></div>
+      </div>
+      <button class="month-nav" onclick="changeMonth(1)">▶</button>
+    </div>
+
+    <!-- Total -->
+    <div class="total-card">
+      <div>
+        <div class="total-lbl">📊 إجمالي مصروفات الشهر</div>
+        <div class="total-val" id="d-total">0 ₪</div>
+        <div style="font-size:.7rem;color:var(--text2);margin-top:.2rem" id="d-total-sub"></div>
+      </div>
+      <div class="total-ico">💰</div>
+    </div>
+
+    <!-- KPI Grid -->
+    <div class="kpi-grid">
+      <div class="kpi-card gold">
+        <div class="kpi-ico">💵</div>
+        <div class="kpi-val gold" id="d-adv">0</div>
+        <div class="kpi-lbl">إجمالي السلف</div>
+        <div class="kpi-sub" id="d-adv-sub"></div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-ico">⛽</div>
+        <div class="kpi-val blue" id="d-fuel">0</div>
+        <div class="kpi-lbl">تكلفة الوقود</div>
+        <div class="kpi-sub" id="d-fuel-sub"></div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-ico">🚛</div>
+        <div class="kpi-val green" id="d-trips">0</div>
+        <div class="kpi-lbl">تكلفة النقلات</div>
+        <div class="kpi-sub" id="d-trips-sub"></div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-ico">🪨</div>
+        <div class="kpi-val orange" id="d-crush">0</div>
+        <div class="kpi-lbl">تكلفة الكسارات</div>
+        <div class="kpi-sub" id="d-crush-sub"></div>
+      </div>
+      <div class="kpi-card red">
+        <div class="kpi-ico">🧾</div>
+        <div class="kpi-val red" id="d-inv">0</div>
+        <div class="kpi-lbl">إجمالي الفواتير</div>
+        <div class="kpi-sub" id="d-inv-sub"></div>
+      </div>
+      <div class="kpi-card purple">
+        <div class="kpi-ico">👷</div>
+        <div class="kpi-val purple" id="d-workers">0</div>
+        <div class="kpi-lbl">العمال النشطون</div>
+        <div class="kpi-sub" id="d-workers-sub"></div>
+      </div>
+    </div>
+
+    <!-- Progress by category -->
+    <div class="progress-section">
+      <div class="prog-title">📈 توزيع المصروفات</div>
+      <div id="prog-bars"></div>
+    </div>
+
+    <!-- Daily log calendar -->
+    <div class="sec-hdr">
+      <span class="sec-title">📅 سجل أيام الشهر</span>
+      <span class="sec-badge" id="active-days-badge">0 يوم نشط</span>
+    </div>
+    <div class="day-table">
+      <div class="day-table-hdr">
+        <span>اليوم</span>
+        <span>النشاطات</span>
+        <span>المصروفات</span>
+        <span>الحالة</span>
+      </div>
+      <div id="day-rows"></div>
+    </div>
+
+    <!-- Worker summary -->
+    <div class="sec-hdr">
+      <span class="sec-title">👷 ملخص العمال الشهري</span>
+    </div>
+    <div class="w-table">
+      <div class="w-table-hdr">
+        <span>العامل</span>
+        <span>الراتب</span>
+        <span>السلف</span>
+        <span>المتبقي</span>
+      </div>
+      <div id="w-rows"></div>
+    </div>
+  </div>
+
+  <!-- ══ HOME / QUICK ADD ══ -->
+  <div class="page" id="page-home">
+    <div style="background:linear-gradient(135deg,#0f1830,#1a2440,#0f1830);border:1px solid var(--border2);border-radius:18px;padding:1.1rem;margin-bottom:.85rem">
+      <div style="font-family:'Readex Pro',sans-serif;font-size:.95rem;font-weight:600;color:var(--gold);margin-bottom:.15rem" id="home-date"></div>
+      <div style="font-size:.75rem;color:var(--text2)">شركة العصر للحفريات</div>
+      <div style="height:1px;background:var(--border2);margin:.75rem 0"></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;text-align:center">
+        <div><div style="font-family:'Readex Pro',sans-serif;font-size:1.05rem;font-weight:700" id="sw">0</div><div style="font-size:.58rem;color:var(--text2);margin-top:.1rem">👷 عمال</div></div>
+        <div><div style="font-family:'Readex Pro',sans-serif;font-size:1.05rem;font-weight:700;color:var(--gold)" id="sa">0</div><div style="font-size:.58rem;color:var(--text2);margin-top:.1rem">💵 سلف</div></div>
+        <div><div style="font-family:'Readex Pro',sans-serif;font-size:1.05rem;font-weight:700;color:var(--blue2)" id="sf">0</div><div style="font-size:.58rem;color:var(--text2);margin-top:.1rem">⛽ وقود</div></div>
+        <div><div style="font-family:'Readex Pro',sans-serif;font-size:1.05rem;font-weight:700;color:var(--orange2)" id="scr">0</div><div style="font-size:.58rem;color:var(--text2);margin-top:.1rem">🪨 كسارات</div></div>
+      </div>
+    </div>
+
+    <div class="sec-hdr"><span class="sec-title">⚡ إضافة سريعة</span></div>
+    <div class="quick-grid">
+      <div class="quick-btn" onclick="openModal('m-adv')"><div class="qico">💵</div><div class="qlbl">سلفة عامل</div></div>
+      <div class="quick-btn" onclick="openModal('m-fuel')"><div class="qico">⛽</div><div class="qlbl">وقود</div></div>
+      <div class="quick-btn" onclick="openModal('m-trip')"><div class="qico">🚛</div><div class="qlbl">نقلة تريلا</div></div>
+      <div class="quick-btn" onclick="openModal('m-crusher')"><div class="qico">🪨</div><div class="qlbl">كسارة</div></div>
+      <div class="quick-btn" onclick="openModal('m-inv')"><div class="qico">🧾</div><div class="qlbl">فاتورة</div></div>
+      <div class="quick-btn" onclick="openModal('m-wrkr')"><div class="qico">👷</div><div class="qlbl">عامل جديد</div></div>
+    </div>
+
+    <div class="sec-hdr"><span class="sec-title">📋 آخر الأنشطة اليوم</span></div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:.75rem">
+      <div id="recent"></div>
+    </div>
+  </div>
+
+  <!-- ══ WORKERS ══ -->
+  <div class="page" id="page-workers">
+    <div class="sec-hdr">
+      <span class="sec-title">👷 العمال</span>
+      <button class="sec-action" onclick="openModal('m-wrkr')">+ إضافة</button>
+    </div>
+    <div id="wlist"></div>
+  </div>
+
+  <!-- ══ OPS ══ -->
+  <div class="page" id="page-ops">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('advances',this)">💵 سلف</button>
+      <button class="tab-btn" onclick="switchTab('fuel',this)">⛽ وقود</button>
+      <button class="tab-btn" onclick="switchTab('trips',this)">🚛 نقلات</button>
+      <button class="tab-btn" onclick="switchTab('crushers',this)">🪨 كسارات</button>
+      <button class="tab-btn" onclick="switchTab('invoices',this)">🧾 فواتير</button>
+    </div>
+    <div id="ops-content"></div>
+  </div>
+
+  <!-- ══ DAY DETAIL PAGE ══ -->
+  <div class="page" id="page-daydetail">
+    <div class="dd-topbar">
+      <button class="dd-back" onclick="closeDayDetail()">←</button>
+      <div class="dd-title-wrap">
+        <div class="dd-page-title" id="ddp-title">تفاصيل اليوم</div>
+        <div class="dd-page-sub" id="ddp-sub"></div>
+      </div>
+    </div>
+    <!-- hero kpis -->
+    <div style="padding:.85rem .85rem 0">
+      <div class="dd-hero" id="ddp-hero"></div>
+      <div id="ddp-sections"></div>
+    </div>
+  </div>
+
+  <nav id="bottom-nav">
+    <button class="nav-btn" onclick="switchPage('dash',this)"><span class="ni">📊</span><span class="nl">الداشبورد</span></button>
+    <button class="nav-btn active" onclick="switchPage('home',this)"><span class="ni">🏠</span><span class="nl">الرئيسية</span></button>
+    <button class="nav-btn" onclick="switchPage('workers',this)"><span class="ni">👷</span><span class="nl">العمال</span></button>
+    <button class="nav-btn" onclick="switchPage('ops',this)"><span class="ni">📋</span><span class="nl">العمليات</span></button>
+  </nav>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="m-wrkr">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">👷 إضافة عامل</div>
+    <div class="form-group"><label class="form-label">اسم العامل</label><input class="fi" id="wn" placeholder="الاسم الكامل"/></div>
+    <div class="form-group"><label class="form-label">المهنة / الدور</label><input class="fi" id="wr" placeholder="حفار، سائق، عامل..."/></div>
+    <div class="form-group"><label class="form-label">الراتب اليومي (₪)</label><input class="fi" type="number" id="ws" placeholder="0"/></div>
+    <div class="fr"><button class="btn btn-ghost" onclick="closeModal('m-wrkr')">إلغاء</button><button class="btn btn-gold" onclick="addWorker()">✅ حفظ</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="m-adv">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">💵 تسجيل سلفة</div>
+    <div class="form-group"><label class="form-label">اختر العامل</label><select class="fs" id="aw"></select></div>
+    <div class="form-group"><label class="form-label">المبلغ (₪)</label><input class="fi" type="number" id="aa" placeholder="0"/></div>
+    <div class="form-group"><label class="form-label">ملاحظات</label><input class="fi" id="an" placeholder="سبب السلفة..."/></div>
+    <div class="fr"><button class="btn btn-ghost" onclick="closeModal('m-adv')">إلغاء</button><button class="btn btn-gold" onclick="addAdvance()">✅ حفظ</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="m-fuel">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">⛽ تسجيل وقود</div>
+    <div class="form-group">
+      <label class="form-label">نوع الوقود</label>
+      <div class="ftoggle"><button class="fopt active" id="fpb" onclick="selFuel('بنزين')">⛽ بنزين</button><button class="fopt" id="fdb" onclick="selFuel('سولار')">🛢️ سولار</button></div>
+      <input type="hidden" id="ft" value="بنزين"/>
+    </div>
+    <div class="fr">
+      <div class="form-group"><label class="form-label">الكمية (لتر)</label><input class="fi" type="number" id="fl" placeholder="0"/></div>
+      <div class="form-group"><label class="form-label">التكلفة (₪)</label><input class="fi" type="number" id="fc" placeholder="0"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">المعدة / السيارة</label><input class="fi" id="fm" placeholder="اسم المعدة"/></div>
+    <div class="fr"><button class="btn btn-ghost" onclick="closeModal('m-fuel')">إلغاء</button><button class="btn btn-gold" onclick="addFuel()">✅ حفظ</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="m-trip">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🚛 تسجيل نقلة تريلا</div>
+    <div class="form-group">
+      <label class="form-label">نوع المواد</label>
+      <select class="fs" id="tm"><option>باسكورس</option><option>تراب</option><option>رمل</option><option>حجارة</option><option>خرسانة</option><option>سمسم</option><option>عدس</option><option>حصمة</option><option>معدات</option><option>أخرى</option></select>
+    </div>
+    <div class="fr">
+      <div class="form-group"><label class="form-label">عدد النقلات</label><input class="fi" type="number" id="tn" value="1"/></div>
+      <div class="form-group"><label class="form-label">التكلفة الكلية (₪)</label><input class="fi" type="number" id="tc" placeholder="0"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">من / إلى</label><input class="fi" id="tr" placeholder="من الموقع إلى..."/></div>
+    <div class="form-group"><label class="form-label">ملاحظات</label><input class="fi" id="tno" placeholder="أي معلومات إضافية..."/></div>
+    <div class="fr"><button class="btn btn-ghost" onclick="closeModal('m-trip')">إلغاء</button><button class="btn btn-gold" onclick="addTrip()">✅ حفظ</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="m-crusher">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🪨 تسجيل طلب كسارة</div>
+    <div class="form-group"><label class="form-label">اسم الكسارة / المورد</label><input class="fi" id="crn" placeholder="مثال: كسارة أبو علي..."/></div>
+    <div class="form-group">
+      <label class="form-label">المواد المأخوذة</label>
+      <div class="mat-picker" id="mat-picker">
+        <button class="mat-chip" onclick="toggleMat(this,'سمسم')">سمسم</button>
+        <button class="mat-chip" onclick="toggleMat(this,'باسكورس')">باسكورس</button>
+        <button class="mat-chip" onclick="toggleMat(this,'عدس')">عدس</button>
+        <button class="mat-chip" onclick="toggleMat(this,'حصمة')">حصمة</button>
+        <button class="mat-chip" onclick="toggleMat(this,'رمل')">رمل</button>
+        <button class="mat-chip" onclick="toggleMat(this,'تراب')">تراب</button>
+        <button class="mat-chip" onclick="toggleMat(this,'حجارة')">حجارة</button>
+      </div>
+    </div>
+    <div id="mat-qty-inputs"></div>
+    <div class="form-group"><label class="form-label">التكلفة الكلية (₪)</label><input class="fi" type="number" id="crc" placeholder="0"/></div>
+    <div class="form-group"><label class="form-label">ملاحظات</label><input class="fi" id="crno" placeholder="تفاصيل إضافية..."/></div>
+    <div class="fr"><button class="btn btn-ghost" onclick="closeModal('m-crusher')">إلغاء</button><button class="btn btn-gold" onclick="addCrusher()">✅ حفظ</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="m-inv">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🧾 تسجيل فاتورة</div>
+    <div class="form-group">
+      <label class="form-label">نوع الفاتورة</label>
+      <select class="fs" id="it"><option>وقود</option><option>مواد بناء</option><option>صيانة معدات</option><option>نقل وشحن</option><option>كسارة</option><option>أدوات وعدد</option><option>أخرى</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">اسم المورد</label><input class="fi" id="is" placeholder="اسم المورد أو الشركة"/></div>
+    <div class="form-group"><label class="form-label">المبلغ (₪)</label><input class="fi" type="number" id="ia" placeholder="0"/></div>
+    <div class="form-group"><label class="form-label">وصف / ملاحظات</label><textarea class="fta" id="id2" placeholder="تفاصيل الفاتورة..."></textarea></div>
+    <div class="fr"><button class="btn btn-ghost" onclick="closeModal('m-inv')">إلغاء</button><button class="btn btn-gold" onclick="addInvoice()">✅ حفظ</button></div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="modal-overlay" id="m-confirm">
+  <div class="confirm-body">
+    <div style="font-size:2.2rem;text-align:center;margin-bottom:.6rem">🗑️</div>
+    <div style="font-size:.95rem;font-weight:700;text-align:center;margin-bottom:.3rem">تأكيد الحذف</div>
+    <div style="font-size:.8rem;color:var(--text2);text-align:center;margin-bottom:1.1rem" id="confirm-msg"></div>
+    <div class="fr"><button class="btn btn-ghost" onclick="closeModal('m-confirm')">إلغاء</button><button class="btn btn-danger" id="confirm-del-btn">🗑️ حذف</button></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── STATE ──
+let CU=null,DB=null,REF=null,PUSH=null,ONVAL=null,REMOVE=null,FBReady=false;
+let workers={},advances={},fuel={},trips={},crushers={},invoices={};
+let opsTab='advances',selMats={},pendingDel={};
+let viewYear=new Date().getFullYear(),viewMonth=new Date().getMonth();
+const USERS={
+  admin:     {pass:'admin123',  role:'admin',    name:'الأدمن',     canEdit:true},
+  supervisor:{pass:'super123',  role:'supervisor',name:'المشرف',    canEdit:true},
+  viewer:    {pass:'view123',   role:'viewer',    name:'عرض فقط',   canEdit:false}
+};
+const AR_MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+const AR_DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+
+// ── FIREBASE ──
+window.addEventListener('firebase-ready',()=>{
+  DB=window._db;REF=window._ref;PUSH=window._push;ONVAL=window._onValue;REMOVE=window._remove;FBReady=true;
+  document.getElementById('db-status').innerHTML='<span class="conn-pill"><span class="dot-live"></span>متصل</span>';
+  hideSplash();checkSess();
+});
+setTimeout(()=>{if(!FBReady){hideSplash();checkSess();}},4000);
+
+function hideSplash(){const s=document.getElementById('splash');s.style.opacity='0';setTimeout(()=>s.style.display='none',600);}
+function checkSess(){const s=localStorage.getItem('al3u');if(s){CU=JSON.parse(s);showApp();}else document.getElementById('login-screen').style.display='flex';}
+function doLogin(){
+  const u=document.getElementById('lu').value.trim(),p=document.getElementById('lp').value;
+  if(USERS[u]&&USERS[u].pass===p){CU={username:u,...USERS[u]};localStorage.setItem('al3u',JSON.stringify(CU));document.getElementById('login-screen').style.display='none';showApp();}
+  else showToast('❌ بيانات الدخول غلط','error');
+}
+function logout(){localStorage.removeItem('al3u');location.reload();}
+
+function showApp(){
+  document.getElementById('app').style.display='block';
+  document.getElementById('tu').textContent=CU.name;
+  const n=new Date();
+  document.getElementById('tb-date').textContent=n.toLocaleDateString('ar');
+  document.getElementById('home-date').textContent=n.toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  applyRoles();
+  if(FBReady)listenAll();else loadLocal();
+}
+
+function applyRoles(){
+  const isViewer = !CU.canEdit;
+  // Nav: viewer sees only dashboard
+  const navBtns=document.querySelectorAll('.nav-btn');
+  if(isViewer){
+    // hide home, workers, ops nav buttons
+    navBtns[1].style.display='none';
+    navBtns[2].style.display='none';
+    navBtns[3].style.display='none';
+    // activate dashboard
+    navBtns[0].classList.add('active');
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-dash').classList.add('active');
+    // show viewer badge in topbar
+    document.getElementById('tu').innerHTML=`<span style="background:var(--blue-dim);color:var(--blue2);border:1px solid rgba(61,127,255,.2);padding:.15rem .5rem;border-radius:8px;font-size:.65rem;font-weight:700">👁️ عرض فقط</span>`;
+  } else {
+    navBtns.forEach(b=>b.style.display='');
+    // show role badge
+    const roleColor = CU.role==='admin' ? 'var(--gold)' : 'var(--green2)';
+    const roleBg    = CU.role==='admin' ? 'var(--gold-dim)' : 'var(--green-dim)';
+    const roleBdr   = CU.role==='admin' ? 'rgba(212,168,67,.2)' : 'rgba(29,184,122,.2)';
+    document.getElementById('tu').innerHTML=`<span style="background:${roleBg};color:${roleColor};border:1px solid ${roleBdr};padding:.15rem .5rem;border-radius:8px;font-size:.65rem;font-weight:700">${CU.role==='admin'?'👑 أدمن':'🔧 مشرف'}</span>`;
+  }
+}
+
+function listenAll(){
+  listen('workers',d=>{workers=d||{};renderAll();});
+  listen('advances',d=>{advances=d||{};renderAll();});
+  listen('fuel',d=>{fuel=d||{};renderAll();});
+  listen('trips',d=>{trips=d||{};renderAll();});
+  listen('crushers',d=>{crushers=d||{};renderAll();});
+  listen('invoices',d=>{invoices=d||{};renderAll();});
+}
+function listen(path,cb){ONVAL(REF(DB,path),s=>cb(s.val()));}
+async function fbAdd(path,data){data.ts=Date.now();data.by=CU.name;await PUSH(REF(DB,path),data);}
+
+function loadLocal(){
+  workers=JSON.parse(localStorage.getItem('al3w')||'{}');
+  advances=JSON.parse(localStorage.getItem('al3a')||'{}');
+  fuel=JSON.parse(localStorage.getItem('al3f')||'{}');
+  trips=JSON.parse(localStorage.getItem('al3t')||'{}');
+  crushers=JSON.parse(localStorage.getItem('al3cr')||'{}');
+  invoices=JSON.parse(localStorage.getItem('al3i')||'{}');
+  renderAll();
+}
+function saveL(k,d){localStorage.setItem('al3'+k,JSON.stringify(d));}
+function renderAll(){
+  homeStats();renderRecent();renderWorkers();renderOps();
+  renderDashboard();
+}
+
+// ── HELPERS ──
+function today(){return new Date().toISOString().split('T')[0];}
+function oa(o){return Object.entries(o||{}).map(([k,v])=>({...v,_key:k}));}
+function monthStr(y,m){return`${y}-${String(m+1).padStart(2,'0')}`;}
+function itemDate(x){if(x.date)return x.date;if(x.ts)return new Date(x.ts).toISOString().split('T')[0];return'';}
+function monthItems(o,y,m){const ms=monthStr(y,m);return oa(o).filter(x=>itemDate(x).startsWith(ms));}
+function todayItems(o){return oa(o).filter(x=>itemDate(x)===today());}
+function fmt(x){if(x.ts)return new Date(x.ts).toLocaleTimeString('ar',{hour:'2-digit',minute:'2-digit'});return'';}
+function num(n){return(+n||0).toLocaleString();}
+
+// ── HOME STATS ──
+function homeStats(){
+  document.getElementById('sw').textContent=oa(workers).length;
+  document.getElementById('sa').textContent=todayItems(advances).reduce((s,x)=>s+(+x.amount||0),0).toLocaleString();
+  document.getElementById('sf').textContent=todayItems(fuel).reduce((s,x)=>s+(+x.liters||0),0);
+  document.getElementById('scr').textContent=todayItems(crushers).length;
+}
+
+// ── DASHBOARD ──
+function changeMonth(d){
+  viewMonth+=d;
+  if(viewMonth>11){viewMonth=0;viewYear++;}
+  if(viewMonth<0){viewMonth=11;viewYear--;}
+  renderDashboard();
+}
+
+function renderDashboard(){
+  const y=viewYear,m=viewMonth;
+  const ms=monthStr(y,m);
+  const now=new Date();
+
+  // Labels
+  document.getElementById('month-label').textContent=`${AR_MONTHS[m]} ${y}`;
+  const isCurrentMonth=y===now.getFullYear()&&m===now.getMonth();
+  document.getElementById('month-sub').textContent=isCurrentMonth?'الشهر الحالي':`${daysInMonth(y,m)} يوم`;
+
+  // Month data
+  const mAdv=monthItems(advances,y,m);
+  const mFuel=monthItems(fuel,y,m);
+  const mTrips=monthItems(trips,y,m);
+  const mCrush=monthItems(crushers,y,m);
+  const mInv=monthItems(invoices,y,m);
+
+  const tAdv=mAdv.reduce((s,x)=>s+(+x.amount||0),0);
+  const tFuel=mFuel.reduce((s,x)=>s+(+x.cost||0),0);
+  const tFuelL=mFuel.reduce((s,x)=>s+(+x.liters||0),0);
+  const tTrips=mTrips.reduce((s,x)=>s+(+x.cost||0),0);
+  const tTripsCnt=mTrips.reduce((s,x)=>s+(+x.count||1),0);
+  const tCrush=mCrush.reduce((s,x)=>s+(+x.cost||0),0);
+  const tInv=mInv.reduce((s,x)=>s+(+x.amount||0),0);
+  const total=tAdv+tFuel+tTrips+tCrush+tInv;
+  const wCount=oa(workers).length;
+
+  // Total
+  document.getElementById('d-total').textContent=num(total)+' ₪';
+  document.getElementById('d-total-sub').textContent=`${mAdv.length+mFuel.length+mTrips.length+mCrush.length+mInv.length} عملية مسجلة`;
+
+  // KPIs
+  document.getElementById('d-adv').textContent=num(tAdv)+' ₪';
+  document.getElementById('d-adv-sub').textContent=mAdv.length+' سلفة';
+  document.getElementById('d-fuel').textContent=num(tFuel)+' ₪';
+  document.getElementById('d-fuel-sub').textContent=tFuelL+' لتر';
+  document.getElementById('d-trips').textContent=num(tTrips)+' ₪';
+  document.getElementById('d-trips-sub').textContent=tTripsCnt+' نقلة';
+  document.getElementById('d-crush').textContent=num(tCrush)+' ₪';
+  document.getElementById('d-crush-sub').textContent=mCrush.length+' طلب';
+  document.getElementById('d-inv').textContent=num(tInv)+' ₪';
+  document.getElementById('d-inv-sub').textContent=mInv.length+' فاتورة';
+  document.getElementById('d-workers').textContent=wCount;
+  document.getElementById('d-workers-sub').textContent='عامل مسجل';
+
+  // Progress bars
+  const cats=[
+    {lbl:'السلف',val:tAdv,cls:'gold'},
+    {lbl:'الوقود',val:tFuel,cls:'blue'},
+    {lbl:'النقلات',val:tTrips,cls:'green'},
+    {lbl:'الكسارات',val:tCrush,cls:'orange'},
+    {lbl:'الفواتير',val:tInv,cls:'red'},
+  ];
+  const maxVal=Math.max(...cats.map(c=>c.val),1);
+  document.getElementById('prog-bars').innerHTML=cats.map(c=>`
+    <div class="prog-row">
+      <span class="prog-label">${c.lbl}</span>
+      <div class="prog-bar-bg"><div class="prog-bar ${c.cls}" style="width:${Math.round(c.val/maxVal*100)}%"></div></div>
+      <span class="prog-val">${num(c.val)} ₪</span>
+    </div>`).join('');
+
+  // Day rows
+  const dim=daysInMonth(y,m);
+  const todayStr=today();
+  let activeDays=0;
+  let rows='';
+  for(let d=1;d<=dim;d++){
+    const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayAdv=oa(advances).filter(x=>itemDate(x)===ds);
+    const dayFuel=oa(fuel).filter(x=>itemDate(x)===ds);
+    const dayTrips=oa(trips).filter(x=>itemDate(x)===ds);
+    const dayCrush=oa(crushers).filter(x=>itemDate(x)===ds);
+    const dayInv=oa(invoices).filter(x=>itemDate(x)===ds);
+    const dayCost=dayAdv.reduce((s,x)=>s+(+x.amount||0),0)+dayFuel.reduce((s,x)=>s+(+x.cost||0),0)+dayTrips.reduce((s,x)=>s+(+x.cost||0),0)+dayCrush.reduce((s,x)=>s+(+x.cost||0),0)+dayInv.reduce((s,x)=>s+(+x.amount||0),0);
+    const hasActivity=dayAdv.length||dayFuel.length||dayTrips.length||dayCrush.length||dayInv.length;
+    if(hasActivity)activeDays++;
+    const isToday=ds===todayStr;
+    const wkDay=new Date(ds).getDay();
+    rows+=`<div class="day-row${isToday?' today':''}" onclick="showDayDetail('${ds}')">
+      <div>
+        <div class="day-num" style="${isToday?'color:var(--gold)':''}">${d}</div>
+        <div style="font-size:.58rem;color:var(--text3)">${AR_DAYS[wkDay]}</div>
+      </div>
+      <div class="day-acts">
+        ${dayAdv.length?`<div class="day-dot gold" title="سلف"></div>`:''}
+        ${dayFuel.length?`<div class="day-dot blue" title="وقود"></div>`:''}
+        ${dayTrips.length?`<div class="day-dot green" title="نقلات"></div>`:''}
+        ${dayCrush.length?`<div class="day-dot orange" title="كسارات"></div>`:''}
+        ${dayInv.length?`<div class="day-dot red" title="فواتير"></div>`:''}
+        ${!hasActivity?`<span style="font-size:.62rem;color:var(--text3)">—</span>`:''}
+      </div>
+      <div class="day-cost">${hasActivity?num(dayCost)+' ₪':'—'}</div>
+      <div><span class="day-badge${hasActivity?'':' empty'}">${hasActivity?'نشط':'فارغ'}</span></div>
+    </div>`;
+  }
+  document.getElementById('day-rows').innerHTML=rows;
+  document.getElementById('active-days-badge').textContent=activeDays+' يوم نشط';
+
+  // Worker table
+  const warr=oa(workers);
+  if(!warr.length){document.getElementById('w-rows').innerHTML='<div style="padding:1rem;text-align:center;color:var(--text2);font-size:.82rem">لا يوجد عمال</div>';return;}
+  document.getElementById('w-rows').innerHTML=warr.map(w=>{
+    const ta=mAdv.filter(a=>a.workerName===w.name).reduce((s,a)=>s+(+a.amount||0),0);
+    const ds=+w.dailySalary||+w.salary||0;
+    const net=ds-ta;
+    return`<div class="w-row">
+      <div class="w-name-cell">
+        <div class="w-av">${w.name.charAt(0)}</div>
+        <div><div class="w-nm">${w.name}</div><div class="w-rl">${w.role||'عامل'}</div></div>
+      </div>
+      <div class="w-cell gold">${num(ds)}</div>
+      <div class="w-cell red">${num(ta)}</div>
+      <div class="w-cell ${net>=0?'green':'red'}">${num(net)}</div>
+    </div>`;
+  }).join('');
+}
+
+function daysInMonth(y,m){return new Date(y,m+1,0).getDate();}
+
+// ── DAY DETAIL FULL PAGE ──
+let prevPage='dash';
+
+function showDayDetail(ds){
+  // remember where we came from
+  prevPage=document.querySelector('.page.active')?.id?.replace('page-','')||'dash';
+
+  const dateObj=new Date(ds+'T12:00:00');
+  const label=dateObj.toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('ddp-title').textContent=label;
+
+  const dayAdv   = oa(advances).filter(x=>itemDate(x)===ds);
+  const dayFuel  = oa(fuel).filter(x=>itemDate(x)===ds);
+  const dayTrips = oa(trips).filter(x=>itemDate(x)===ds);
+  const dayCrush = oa(crushers).filter(x=>itemDate(x)===ds);
+  const dayInv   = oa(invoices).filter(x=>itemDate(x)===ds);
+
+  const tAdv  = dayAdv.reduce((s,x)=>s+(+x.amount||0),0);
+  const tFuel = dayFuel.reduce((s,x)=>s+(+x.cost||0),0);
+  const tTrip = dayTrips.reduce((s,x)=>s+(+x.cost||0),0);
+  const tCrush= dayCrush.reduce((s,x)=>s+(+x.cost||0),0);
+  const tInv  = dayInv.reduce((s,x)=>s+(+x.amount||0),0);
+  const total = tAdv+tFuel+tTrip+tCrush+tInv;
+  const ops   = dayAdv.length+dayFuel.length+dayTrips.length+dayCrush.length+dayInv.length;
+
+  document.getElementById('ddp-sub').textContent = ops ? `${ops} عملية · إجمالي ${num(total)} ₪` : 'لا توجد عمليات في هذا اليوم';
+
+  // Hero KPIs
+  document.getElementById('ddp-hero').innerHTML=`
+    <div class="dd-kpi"><div class="dd-kpi-val" style="color:var(--gold)">${num(total)} ₪</div><div class="dd-kpi-lbl">📊 إجمالي اليوم</div></div>
+    <div class="dd-kpi"><div class="dd-kpi-val" style="color:var(--red2)">${num(tAdv)} ₪</div><div class="dd-kpi-lbl">💵 السلف</div></div>
+    <div class="dd-kpi"><div class="dd-kpi-val" style="color:var(--blue2)">${num(tFuel)} ₪</div><div class="dd-kpi-lbl">⛽ الوقود</div></div>
+    <div class="dd-kpi"><div class="dd-kpi-val" style="color:var(--green2)">${num(tTrip)} ₪</div><div class="dd-kpi-lbl">🚛 النقلات</div></div>
+    <div class="dd-kpi"><div class="dd-kpi-val" style="color:var(--orange2)">${num(tCrush)} ₪</div><div class="dd-kpi-lbl">🪨 الكسارات</div></div>
+    <div class="dd-kpi"><div class="dd-kpi-val" style="color:var(--red2)">${num(tInv)} ₪</div><div class="dd-kpi-lbl">🧾 الفواتير</div></div>
+  `;
+
+  // Sections
+  let html='';
+
+  if(!ops){
+    html=`<div class="dd-no-ops"><div class="ei">📭</div><p>لا توجد عمليات مسجلة في هذا اليوم</p></div>`;
+  }
+
+  if(dayAdv.length){
+    html+=`<div class="dd-section-card">
+      <div class="dd-sec-hdr">
+        <span class="dd-sec-lbl">💵 السلف</span>
+        <span class="dd-sec-count">${dayAdv.length} سجل · ${num(tAdv)} ₪</span>
+      </div>`+
+      dayAdv.map(x=>`
+        <div class="dd-item">
+          <div class="dd-item-ico" style="background:var(--gold-dim)">💵</div>
+          <div class="dd-item-body">
+            <div class="dd-item-title">👷 ${x.workerName}</div>
+            <div class="dd-item-sub">${x.note||'—'} · بواسطة: ${x.by||'—'}</div>
+          </div>
+          <div class="dd-item-right">
+            <span class="dd-item-amt" style="color:var(--red2)">-${num(x.amount)} ₪</span>
+            <span class="dd-item-time">${fmt(x)}</span>
+          </div>
+          <button class="dd-item-del" onclick="confirmDel('advances','${x._key}','advances','حذف سلفة ${x.workerName}؟')" ${!CU.canEdit?'style="display:none"':''}>🗑️</button>
+        </div>`).join('')+
+      `</div>`;
+  }
+
+  if(dayFuel.length){
+    html+=`<div class="dd-section-card">
+      <div class="dd-sec-hdr">
+        <span class="dd-sec-lbl">⛽ الوقود</span>
+        <span class="dd-sec-count">${dayFuel.length} سجل · ${dayFuel.reduce((s,x)=>s+(+x.liters||0),0)} لتر · ${num(tFuel)} ₪</span>
+      </div>`+
+      dayFuel.map(x=>`
+        <div class="dd-item">
+          <div class="dd-item-ico" style="background:var(--blue-dim)">${x.type==='بنزين'?'⛽':'🛢️'}</div>
+          <div class="dd-item-body">
+            <div class="dd-item-title">${x.type} · ${x.machine||'غير محدد'}</div>
+            <div class="dd-item-sub">${x.liters} لتر · بواسطة: ${x.by||'—'}</div>
+          </div>
+          <div class="dd-item-right">
+            <span class="dd-item-amt" style="color:var(--blue2)">${num(x.cost)} ₪</span>
+            <span class="dd-item-time">${fmt(x)}</span>
+          </div>
+          <button class="dd-item-del" onclick="confirmDel('fuel','${x._key}','fuel','حذف سجل الوقود؟')" ${!CU.canEdit?'style="display:none"':''}>🗑️</button>
+        </div>`).join('')+
+      `</div>`;
+  }
+
+  if(dayTrips.length){
+    html+=`<div class="dd-section-card">
+      <div class="dd-sec-hdr">
+        <span class="dd-sec-lbl">🚛 النقلات</span>
+        <span class="dd-sec-count">${dayTrips.reduce((s,x)=>s+(+x.count||1),0)} نقلة · ${num(tTrip)} ₪</span>
+      </div>`+
+      dayTrips.map(x=>`
+        <div class="dd-item">
+          <div class="dd-item-ico" style="background:var(--green-dim)">🚛</div>
+          <div class="dd-item-body">
+            <div class="dd-item-title">${x.material} · ${x.count} نقلة</div>
+            <div class="dd-item-sub">${x.route||'—'} · ${x.note||''} · ${x.by||'—'}</div>
+          </div>
+          <div class="dd-item-right">
+            <span class="dd-item-amt" style="color:var(--green2)">${num(x.cost)} ₪</span>
+            <span class="dd-item-time">${fmt(x)}</span>
+          </div>
+          <button class="dd-item-del" onclick="confirmDel('trips','${x._key}','trips','حذف هذه النقلة؟')" ${!CU.canEdit?'style="display:none"':''}>🗑️</button>
+        </div>`).join('')+
+      `</div>`;
+  }
+
+  if(dayCrush.length){
+    html+=`<div class="dd-section-card">
+      <div class="dd-sec-hdr">
+        <span class="dd-sec-lbl">🪨 الكسارات</span>
+        <span class="dd-sec-count">${dayCrush.length} طلب · ${num(tCrush)} ₪</span>
+      </div>`+
+      dayCrush.map(x=>{
+        const mats=Object.entries(x.materials||{});
+        return`<div class="dd-item" style="align-items:flex-start">
+          <div class="dd-item-ico" style="background:var(--orange-dim);margin-top:.1rem">🪨</div>
+          <div class="dd-item-body">
+            <div class="dd-item-title">🏭 ${x.name}</div>
+            <div class="dd-item-sub">${x.note||''} · ${x.by||'—'}</div>
+            ${mats.length?`<div class="dd-mat-list">${mats.map(([k,v])=>`<span class="dd-mat-chip">${k} <span class="dd-mat-qty">${v}</span></span>`).join('')}</div>`:''}
+          </div>
+          <div class="dd-item-right">
+            <span class="dd-item-amt" style="color:var(--orange2)">${num(x.cost)} ₪</span>
+            <span class="dd-item-time">${fmt(x)}</span>
+          </div>
+          <button class="dd-item-del" onclick="confirmDel('crushers','${x._key}','crushers','حذف طلب كسارة ${x.name}؟')" ${!CU.canEdit?'style="display:none"':''}>🗑️</button>
+        </div>`;
+      }).join('')+
+      `</div>`;
+  }
+
+  if(dayInv.length){
+    html+=`<div class="dd-section-card">
+      <div class="dd-sec-hdr">
+        <span class="dd-sec-lbl">🧾 الفواتير</span>
+        <span class="dd-sec-count">${dayInv.length} فاتورة · ${num(tInv)} ₪</span>
+      </div>`+
+      dayInv.map(x=>`
+        <div class="dd-item">
+          <div class="dd-item-ico" style="background:var(--red-dim)">🧾</div>
+          <div class="dd-item-body">
+            <div class="dd-item-title">${x.type} · ${x.supplier||'غير محدد'}</div>
+            <div class="dd-item-sub">${x.desc||'—'} · ${x.by||'—'}</div>
+          </div>
+          <div class="dd-item-right">
+            <span class="dd-item-amt" style="color:var(--red2)">-${num(x.amount)} ₪</span>
+            <span class="dd-item-time">${fmt(x)}</span>
+          </div>
+          <button class="dd-item-del" onclick="confirmDel('invoices','${x._key}','invoices','حذف هذه الفاتورة؟')" ${!CU.canEdit?'style="display:none"':''}>🗑️</button>
+        </div>`).join('')+
+      `</div>`;
+  }
+
+  document.getElementById('ddp-sections').innerHTML=html;
+
+  // Switch to day detail page (hide nav)
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-daydetail').classList.add('active');
+  document.getElementById('bottom-nav').style.display='none';
+  // scroll to top
+  document.getElementById('page-daydetail').scrollTo(0,0);
+  window.scrollTo(0,0);
+}
+
+function closeDayDetail(){
+  document.getElementById('bottom-nav').style.display='flex';
+  const navBtns=document.querySelectorAll('.nav-btn');
+  const idx={'dash':0,'home':1,'workers':2,'ops':3};
+  const btn=navBtns[idx[prevPage]??0];
+  switchPage(prevPage,btn);
+}
+
+// ── WORKERS ──
+async function addWorker(){
+  if(!CU.canEdit){showToast('❌ ليس لديك صلاحية الإضافة','error');return;}
+  const n=document.getElementById('wn').value.trim(),r=document.getElementById('wr').value.trim(),s=+document.getElementById('ws').value;
+  if(!n){showToast('❌ أدخل اسم العامل','error');return;}
+  const d={name:n,role:r,dailySalary:s,date:today()};
+  if(FBReady)await fbAdd('workers',d);else{d.id=Date.now()+'';workers[d.id]=d;saveL('w',workers);renderAll();}
+  document.getElementById('wn').value='';document.getElementById('wr').value='';document.getElementById('ws').value='';
+  closeModal('m-wrkr');showToast('✅ تم إضافة العامل','success');
+}
+
+function renderWorkers(){
+  const el=document.getElementById('wlist'),arr=oa(workers);
+  if(!arr.length){el.innerHTML='<div class="empty-state"><div class="ei">👷</div><p>لا يوجد عمال مسجلون</p></div>';return;}
+  el.innerHTML=arr.map(w=>{
+    const ta=oa(advances).filter(a=>a.workerName===w.name).reduce((s,a)=>s+(+a.amount||0),0);
+    const ds=+w.dailySalary||+w.salary||0;const net=ds-ta;
+    return`<div class="wcard">
+      <div class="wcard-hdr">
+        <div class="wavatar">${w.name.charAt(0)}</div>
+        <div style="flex:1"><div style="font-weight:700;font-size:.92rem">${w.name}</div><div style="font-size:.7rem;color:var(--text2)">${w.role||'عامل'}</div></div>
+        <button class="del-btn" onclick="confirmDel('workers','${w._key}','workers','حذف العامل: ${w.name}؟')">🗑️</button>
+      </div>
+      <div class="wstats">
+        <div class="wstat"><div class="wsv gold">${num(ds)}</div><div class="wsl">الراتب اليومي ₪</div></div>
+        <div class="wstat"><div class="wsv red">${num(ta)}</div><div class="wsl">السلف ₪</div></div>
+        <div class="wstat"><div class="wsv ${net>=0?'green':'red'}">${num(net)}</div><div class="wsl">المتبقي ₪</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function fillW(){const s=document.getElementById('aw'),arr=oa(workers);s.innerHTML=arr.length?arr.map(w=>`<option>${w.name}</option>`).join(''):'<option>لا يوجد عمال</option>';}
+
+// ── ADDS ──
+async function addAdvance(){
+  if(!CU.canEdit){showToast('❌ ليس لديك صلاحية الإضافة','error');return;}
+  const w=document.getElementById('aw').value,a=+document.getElementById('aa').value,n=document.getElementById('an').value;
+  if(!w||!a){showToast('❌ أكمل البيانات','error');return;}
+  const d={workerName:w,amount:a,note:n,date:today()};
+  if(FBReady)await fbAdd('advances',d);else{d.id=Date.now()+'';advances[d.id]=d;saveL('a',advances);renderAll();}
+  document.getElementById('aa').value='';document.getElementById('an').value='';
+  closeModal('m-adv');showToast('✅ تم تسجيل السلفة','success');
+}
+function selFuel(t){document.getElementById('ft').value=t;document.getElementById('fpb').classList.toggle('active',t==='بنزين');document.getElementById('fdb').classList.toggle('active',t==='سولار');}
+async function addFuel(){
+  if(!CU.canEdit){showToast('❌ ليس لديك صلاحية الإضافة','error');return;}
+  const t=document.getElementById('ft').value,l=+document.getElementById('fl').value,c=+document.getElementById('fc').value,m=document.getElementById('fm').value;
+  if(!l){showToast('❌ أدخل الكمية','error');return;}
+  const d={type:t,liters:l,cost:c,machine:m,date:today()};
+  if(FBReady)await fbAdd('fuel',d);else{d.id=Date.now()+'';fuel[d.id]=d;saveL('f',fuel);renderAll();}
+  document.getElementById('fl').value='';document.getElementById('fc').value='';document.getElementById('fm').value='';
+  closeModal('m-fuel');showToast('✅ تم تسجيل الوقود','success');
+}
+async function addTrip(){
+  if(!CU.canEdit){showToast('❌ ليس لديك صلاحية الإضافة','error');return;}
+  const m=document.getElementById('tm').value,n=+document.getElementById('tn').value||1,c=+document.getElementById('tc').value,r=document.getElementById('tr').value,no=document.getElementById('tno').value;
+  const d={material:m,count:n,cost:c,route:r,note:no,date:today()};
+  if(FBReady)await fbAdd('trips',d);else{d.id=Date.now()+'';trips[d.id]=d;saveL('t',trips);renderAll();}
+  document.getElementById('tn').value='1';document.getElementById('tc').value='';document.getElementById('tr').value='';document.getElementById('tno').value='';
+  closeModal('m-trip');showToast('✅ تم تسجيل النقلة','success');
+}
+function toggleMat(btn,mat){btn.classList.toggle('sel');if(btn.classList.contains('sel'))selMats[mat]=0;else delete selMats[mat];renderMatInputs();}
+function renderMatInputs(){
+  const el=document.getElementById('mat-qty-inputs'),mats=Object.keys(selMats);
+  if(!mats.length){el.innerHTML='';return;}
+  el.innerHTML=`<div class="form-group"><label class="form-label">الكميات</label><div style="display:flex;flex-direction:column;gap:.45rem">`+
+    mats.map(m=>`<div style="display:flex;align-items:center;gap:.5rem"><span style="font-size:.82rem;font-weight:700;min-width:65px;color:var(--gold)">${m}</span><input class="fi" type="number" placeholder="الكمية" id="mq-${m}" style="flex:1"/></div>`).join('')+`</div></div>`;
+}
+async function addCrusher(){
+  if(!CU.canEdit){showToast('❌ ليس لديك صلاحية الإضافة','error');return;}
+  const name=document.getElementById('crn').value.trim(),cost=+document.getElementById('crc').value,note=document.getElementById('crno').value;
+  if(!name){showToast('❌ أدخل اسم الكسارة','error');return;}
+  const mats={};Object.keys(selMats).forEach(m=>{const i=document.getElementById('mq-'+m);if(i)mats[m]=+i.value||0;});
+  const d={name,materials:mats,cost,note,date:today()};
+  if(FBReady)await fbAdd('crushers',d);else{d.id=Date.now()+'';crushers[d.id]=d;saveL('cr',crushers);renderAll();}
+  document.getElementById('crn').value='';document.getElementById('crc').value='';document.getElementById('crno').value='';
+  selMats={};document.querySelectorAll('.mat-chip').forEach(c=>c.classList.remove('sel'));document.getElementById('mat-qty-inputs').innerHTML='';
+  closeModal('m-crusher');showToast('✅ تم تسجيل الكسارة','success');
+}
+async function addInvoice(){
+  if(!CU.canEdit){showToast('❌ ليس لديك صلاحية الإضافة','error');return;}
+  const t=document.getElementById('it').value,s=document.getElementById('is').value,a=+document.getElementById('ia').value,d2=document.getElementById('id2').value;
+  if(!a){showToast('❌ أدخل المبلغ','error');return;}
+  const d={type:t,supplier:s,amount:a,desc:d2,date:today()};
+  if(FBReady)await fbAdd('invoices',d);else{d.id=Date.now()+'';invoices[d.id]=d;saveL('i',invoices);renderAll();}
+  document.getElementById('is').value='';document.getElementById('ia').value='';document.getElementById('id2').value='';
+  closeModal('m-inv');showToast('✅ تم تسجيل الفاتورة','success');
+}
+
+// ── DELETE ──
+function confirmDel(path,id,lk,msg){
+  if(!CU.canEdit){showToast('❌ ليس لديك صلاحية الحذف','error');return;}
+  pendingDel={path,id,lk};
+  document.getElementById('confirm-msg').textContent=msg||'هل أنت متأكد؟';
+  document.getElementById('confirm-del-btn').onclick=execDel;
+  openModal('m-confirm');
+}
+async function execDel(){
+  const{path,id,lk}=pendingDel;
+  closeModal('m-confirm');
+  if(FBReady&&DB){
+    try{await REMOVE(REF(DB,path+'/'+id));showToast('✅ تم الحذف','success');}
+    catch(e){showToast('❌ فشل الحذف','error');}
+  }else{
+    const maps={workers,advances,fuel,trips,crushers,invoices};
+    const keys={workers:'w',advances:'a',fuel:'f',trips:'t',crushers:'cr',invoices:'i'};
+    if(maps[lk]&&maps[lk][id]){delete maps[lk][id];saveL(keys[lk],maps[lk]);renderAll();showToast('✅ تم الحذف','success');}
+  }
+}
+
+// ── OPS ──
+function switchTab(tab,btn){opsTab=tab;document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');renderOps();}
+function dBtn(path,key,lk,msg){return`<button class="del-btn" onclick="confirmDel('${path}','${key}','${lk}','${msg}')">🗑️</button>`;}
+function renderOps(){
+  const el=document.getElementById('ops-content');
+  const map={advances,fuel,trips,crushers,invoices};
+  const arr=oa(map[opsTab]).sort((a,b)=>(b.ts||0)-(a.ts||0));
+  const emp={advances:'💵',fuel:'⛽',trips:'🚛',crushers:'🪨',invoices:'🧾'};
+  if(!arr.length){el.innerHTML=`<div class="empty-state"><div class="ei">${emp[opsTab]}</div><p>لا توجد سجلات</p></div>`;return;}
+  el.innerHTML=arr.map(x=>{
+    const k=x._key;
+    if(opsTab==='advances')return`<div class="li"><div class="li-ico gold">💵</div><div class="li-body"><div class="li-title">👷 ${x.workerName}</div><div class="li-sub">${x.date} ${fmt(x)} · ${x.note||''} · ${x.by||''}</div></div><div class="li-amt red">-${num(x.amount)} ₪</div>${dBtn('advances',k,'advances','حذف سلفة '+x.workerName+'؟')}</div>`;
+    if(opsTab==='fuel')return`<div class="li"><div class="li-ico blue">${x.type==='بنزين'?'⛽':'🛢️'}</div><div class="li-body"><div class="li-title">${x.type} · ${x.machine||'غير محدد'}</div><div class="li-sub">${x.date} ${fmt(x)} · ${x.liters} لتر · ${x.by||''}</div></div><div class="li-amt blue">${num(x.cost)} ₪</div>${dBtn('fuel',k,'fuel','حذف سجل الوقود؟')}</div>`;
+    if(opsTab==='trips')return`<div class="li"><div class="li-ico green">🚛</div><div class="li-body"><div class="li-title">${x.material} · ${x.count} نقلة</div><div class="li-sub">${x.date} ${fmt(x)} · ${x.route||''} · ${x.by||''}</div></div><div class="li-amt green">${num(x.cost)} ₪</div>${dBtn('trips',k,'trips','حذف هذه النقلة؟')}</div>`;
+    if(opsTab==='crushers'){const ms=Object.entries(x.materials||{}).map(([k2,v])=>`${k2}:${v}`).join('·');return`<div class="li"><div class="li-ico orange">🪨</div><div class="li-body"><div class="li-title">🏭 ${x.name}</div><div class="li-sub">${x.date} ${fmt(x)} · ${ms||'—'} · ${x.by||''}</div></div><div class="li-amt orange">${num(x.cost)} ₪</div>${dBtn('crushers',k,'crushers','حذف طلب كسارة '+x.name+'؟')}</div>`;}
+    if(opsTab==='invoices')return`<div class="li"><div class="li-ico red">🧾</div><div class="li-body"><div class="li-title">${x.type} · ${x.supplier||'غير محدد'}</div><div class="li-sub">${x.date} ${fmt(x)} · ${x.desc||''}</div></div><div class="li-amt red">-${num(x.amount)} ₪</div>${dBtn('invoices',k,'invoices','حذف هذه الفاتورة؟')}</div>`;
+  }).join('');
+}
+
+// ── RECENT ──
+function renderRecent(){
+  let all=[
+    ...todayItems(advances).map(x=>({ico:'💵',icoCls:'yellow',t:`سلفة · ${x.workerName}`,s:fmt(x),a:`-${num(x.amount)} ₪`,c:'red',ts:x.ts||0})),
+    ...todayItems(fuel).map(x=>({ico:x.type==='بنزين'?'⛽':'🛢️',icoCls:'blue',t:`${x.type} · ${x.machine||''}`,s:fmt(x),a:`${x.liters} لتر`,c:'blue',ts:x.ts||0})),
+    ...todayItems(trips).map(x=>({ico:'🚛',icoCls:'green',t:`${x.material} · ${x.count} نقلة`,s:fmt(x),a:`${num(x.cost)} ₪`,c:'green',ts:x.ts||0})),
+    ...todayItems(crushers).map(x=>({ico:'🪨',icoCls:'orange',t:`كسارة · ${x.name}`,s:fmt(x),a:`${num(x.cost)} ₪`,c:'orange',ts:x.ts||0})),
+    ...todayItems(invoices).map(x=>({ico:'🧾',icoCls:'red',t:`${x.type} · ${x.supplier||''}`,s:fmt(x),a:`-${num(x.amount)} ₪`,c:'red',ts:x.ts||0})),
+  ].sort((a,b)=>b.ts-a.ts).slice(0,8);
+  const el=document.getElementById('recent');
+  if(!all.length){el.innerHTML='<div class="empty-state"><div class="ei">📭</div><p>لا يوجد نشاط اليوم بعد</p></div>';return;}
+  el.innerHTML=all.map(a=>`<div style="display:flex;align-items:center;gap:.6rem;padding:.6rem 0;border-bottom:1px solid var(--border)">
+    <div style="width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;background:var(--${a.icoCls==='yellow'?'gold':a.icoCls}-dim)">${a.ico}</div>
+    <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:.83rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.t}</div><div style="font-size:.68rem;color:var(--text2)">${a.s}</div></div>
+    <div style="font-family:'Readex Pro';font-weight:700;font-size:.82rem;color:var(--${a.c==='red'?'red2':a.c==='blue'?'blue2':a.c==='green'?'green2':a.c==='orange'?'orange2':'gold'})">${a.a}</div>
+  </div>`).join('');
+}
+
+// ── NAV ──
+function switchPage(p,btn){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  if(btn) btn.classList.add('active');
+  document.getElementById('bottom-nav').style.display='flex';
+  if(p==='ops')renderOps();
+  if(p==='workers')renderWorkers();
+  if(p==='dash')renderDashboard();
+}
+function openModal(id){if(id==='m-adv')fillW();document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='show '+type;setTimeout(()=>t.className='',2500);}
+document.getElementById('lp')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+</script>
+</body>
+</html>
