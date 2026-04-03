@@ -319,6 +319,31 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 #toast.success{background:var(--green-dim);border-color:rgba(29,184,122,.3);color:var(--green2)}
 #toast.error{background:var(--red-dim);border-color:rgba(224,82,82,.3);color:var(--red2)}
 
+.cal-header{display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:.65rem 1rem;margin-bottom:.75rem}
+.cal-grid-wrap{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:.65rem}
+.cal-day-names{display:grid;grid-template-columns:repeat(7,1fr);background:var(--surface2);border-bottom:1px solid var(--border2)}
+.cal-day-names span{text-align:center;font-size:.62rem;font-weight:700;color:var(--text2);padding:.5rem 0;text-transform:uppercase;letter-spacing:.3px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.cal-cell{min-height:54px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:.3rem .25rem;cursor:pointer;transition:background .15s;position:relative;display:flex;flex-direction:column;align-items:center;gap:.18rem}
+.cal-cell:nth-child(7n){border-right:none}
+.cal-cell:hover{background:var(--surface2)}
+.cal-cell.today{background:rgba(212,168,67,0.06);}
+.cal-cell.today .cal-num{color:var(--gold);font-weight:800}
+.cal-cell.empty{background:var(--bg2);cursor:default}
+.cal-cell.active-day{border-bottom:2px solid var(--gold)}
+.cal-num{font-family:'Readex Pro',sans-serif;font-size:.8rem;font-weight:600;color:var(--text);line-height:1}
+.cal-dots{display:flex;flex-wrap:wrap;gap:.15rem;justify-content:center;margin-top:.1rem}
+.cal-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.cal-dot.gold{background:var(--gold)}
+.cal-dot.blue{background:var(--blue2)}
+.cal-dot.green{background:var(--green2)}
+.cal-dot.orange{background:var(--orange2)}
+.cal-dot.purple{background:var(--purple2)}
+.cal-dot.teal{background:#1dd4c8}
+.cal-cost{font-size:.5rem;color:var(--text2);font-family:'Readex Pro',sans-serif;font-weight:600}
+.cal-legend{display:flex;flex-wrap:wrap;gap:.5rem .85rem;padding:.5rem .25rem;margin-bottom:.75rem}
+.cal-legend span{display:flex;align-items:center;gap:.3rem;font-size:.7rem;color:var(--text2);font-weight:600}
+
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
@@ -405,6 +430,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 
       <div class="kpi-card purple"><div class="kpi-ico">🚜</div><div class="kpi-val purple" id="d-rent">0</div><div class="kpi-lbl">تكلفة المعدات</div><div class="kpi-sub" id="d-rent-sub"></div></div>
       <div class="kpi-card blue"><div class="kpi-ico">🔩</div><div class="kpi-val blue" id="d-maint">0</div><div class="kpi-lbl">تكلفة الصيانة</div><div class="kpi-sub" id="d-maint-sub"></div></div>
+      <div class="kpi-card green"><div class="kpi-ico">🛒</div><div class="kpi-val green" id="d-purch">0</div><div class="kpi-lbl">المشتريات</div><div class="kpi-sub" id="d-purch-sub"></div></div>
     </div>
     <div class="progress-section">
       <div class="prog-title">📈 توزيع المصروفات</div>
@@ -443,6 +469,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="quick-btn" onclick="openModal('m-crusher')"><div class="qico">🪨</div><div class="qlbl">كسارة</div></div>
       <div class="quick-btn" onclick="openModal('m-rental')"><div class="qico">🚜</div><div class="qlbl">استئجار معدة</div></div>
       <div class="quick-btn" onclick="openModal('m-maint')"><div class="qico">🔩</div><div class="qlbl">صيانة معدة</div></div>
+      <div class="quick-btn" onclick="openModal('m-purchase')"><div class="qico">🛒</div><div class="qlbl">شراء قطع</div></div>
     </div>
     <div class="sec-hdr"><span class="sec-title">📋 آخر الأنشطة اليوم</span></div>
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:.75rem"><div id="recent"></div></div>
@@ -456,13 +483,38 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 
   <!-- OPS -->
   <div class="page" id="page-ops">
-    <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('advances',this)">💵 سلف</button>
-      <button class="tab-btn" onclick="switchTab('fuel',this)">⛽ وقود</button>
-      <button class="tab-btn" onclick="switchTab('trips',this)">🚛 نقلات</button>
-      <button class="tab-btn" onclick="switchTab('crushers',this)">🪨 كسارات</button>
-      <button class="tab-btn" onclick="switchTab('rentals',this)">🚜 معدات</button>
-      <button class="tab-btn" onclick="switchTab('maintenance',this)">🔩 صيانة</button>
+    <!-- تنقل بين الأشهر -->
+    <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:.65rem 1rem;margin-bottom:.75rem">
+      <button class="month-nav" onclick="calPrev()">◀</button>
+      <div style="text-align:center">
+        <div class="month-label" id="cal-month-label"></div>
+        <div class="month-sub" id="cal-month-sub"></div>
+      </div>
+      <button class="month-nav" onclick="calNext()">▶</button>
+    </div>
+    <!-- أسماء الأيام -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:.5rem">
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);background:var(--surface2);border-bottom:1px solid var(--border2)">
+        <span style="text-align:center;font-size:.6rem;font-weight:700;color:var(--text2);padding:.5rem 0">أحد</span>
+        <span style="text-align:center;font-size:.6rem;font-weight:700;color:var(--text2);padding:.5rem 0">اثنين</span>
+        <span style="text-align:center;font-size:.6rem;font-weight:700;color:var(--text2);padding:.5rem 0">ثلاثاء</span>
+        <span style="text-align:center;font-size:.6rem;font-weight:700;color:var(--text2);padding:.5rem 0">أربعاء</span>
+        <span style="text-align:center;font-size:.6rem;font-weight:700;color:var(--text2);padding:.5rem 0">خميس</span>
+        <span style="text-align:center;font-size:.6rem;font-weight:700;color:var(--text2);padding:.5rem 0">جمعة</span>
+        <span style="text-align:center;font-size:.6rem;font-weight:700;color:var(--text2);padding:.5rem 0">سبت</span>
+      </div>
+      <!-- شبكة التقويم -->
+      <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr)"></div>
+    </div>
+    <!-- مفتاح الألوان -->
+    <div style="display:flex;flex-wrap:wrap;gap:.35rem .7rem;padding:.4rem .25rem;margin-bottom:.5rem">
+      <span style="display:flex;align-items:center;gap:.28rem;font-size:.67rem;color:var(--text2)"><span style="width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0"></span>سلف</span>
+      <span style="display:flex;align-items:center;gap:.28rem;font-size:.67rem;color:var(--text2)"><span style="width:7px;height:7px;border-radius:50%;background:var(--blue2);flex-shrink:0"></span>وقود</span>
+      <span style="display:flex;align-items:center;gap:.28rem;font-size:.67rem;color:var(--text2)"><span style="width:7px;height:7px;border-radius:50%;background:var(--green2);flex-shrink:0"></span>نقلات</span>
+      <span style="display:flex;align-items:center;gap:.28rem;font-size:.67rem;color:var(--text2)"><span style="width:7px;height:7px;border-radius:50%;background:var(--orange2);flex-shrink:0"></span>كسارات</span>
+      <span style="display:flex;align-items:center;gap:.28rem;font-size:.67rem;color:var(--text2)"><span style="width:7px;height:7px;border-radius:50%;background:var(--purple2);flex-shrink:0"></span>معدات</span>
+      <span style="display:flex;align-items:center;gap:.28rem;font-size:.67rem;color:var(--text2)"><span style="width:7px;height:7px;border-radius:50%;background:#1dd4c8;flex-shrink:0"></span>صيانة</span>
+      <span style="display:flex;align-items:center;gap:.28rem;font-size:.67rem;color:var(--text2)"><span style="width:7px;height:7px;border-radius:50%;background:var(--green2);flex-shrink:0"></span>مشتريات</span>
     </div>
     <div id="ops-content"></div>
   </div>
@@ -489,6 +541,50 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
     <div style="font-size:.72rem;color:var(--text2);font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:.5rem">حسابات مضافة</div>
     <div id="users-list"><div class="empty-state"><div class="ei">👥</div><p>لا توجد حسابات مضافة بعد</p></div></div>
+  </div>
+
+  <!-- ══ WORKER DETAIL PAGE ══ -->
+  <div class="page" id="page-worker-detail">
+    <div class="dd-topbar">
+      <button class="dd-back" onclick="closeWorkerDetail()">←</button>
+      <div>
+        <div class="dd-page-title" id="wd-name">تفاصيل العامل</div>
+        <div class="dd-page-sub" id="wd-role"></div>
+      </div>
+    </div>
+    <div style="padding:.85rem .85rem 0">
+      <!-- Stats -->
+      <div style="background:linear-gradient(135deg,#0f1830,#1a2440,#0f1830);border:1px solid var(--border2);border-radius:18px;padding:1.1rem;margin-bottom:.85rem">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;text-align:center">
+          <div style="background:rgba(255,255,255,.03);border-radius:10px;padding:.65rem .3rem">
+            <div style="font-family:'Readex Pro',sans-serif;font-size:1.1rem;font-weight:700;color:var(--gold)" id="wd-salary">0</div>
+            <div style="font-size:.62rem;color:var(--text2);margin-top:.15rem">الراتب اليومي ₪</div>
+          </div>
+          <div style="background:rgba(255,255,255,.03);border-radius:10px;padding:.65rem .3rem">
+            <div style="font-family:'Readex Pro',sans-serif;font-size:1.1rem;font-weight:700;color:var(--red2)" id="wd-total-adv">0</div>
+            <div style="font-size:.62rem;color:var(--text2);margin-top:.15rem">إجمالي السلف ₪</div>
+          </div>
+          <div style="background:rgba(255,255,255,.03);border-radius:10px;padding:.65rem .3rem">
+            <div style="font-family:'Readex Pro',sans-serif;font-size:1.1rem;font-weight:700" id="wd-net">0</div>
+            <div style="font-size:.62rem;color:var(--text2);margin-top:.15rem">المتبقي ₪</div>
+          </div>
+        </div>
+      </div>
+      <!-- Month selector -->
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:.6rem 1rem;margin-bottom:.85rem">
+        <button class="month-nav" onclick="wdPrevMonth()">◀</button>
+        <div style="text-align:center">
+          <div class="month-label" id="wd-month-label"></div>
+        </div>
+        <button class="month-nav" onclick="wdNextMonth()">▶</button>
+      </div>
+      <!-- Advances list -->
+      <div class="sec-hdr">
+        <span class="sec-title">💵 سجل السلف</span>
+        <span style="background:var(--red-dim);color:var(--red2);font-size:.68rem;font-weight:700;padding:.18rem .55rem;border-radius:8px" id="wd-adv-count">0 سلفة</span>
+      </div>
+      <div id="wd-advances-list"></div>
+    </div>
   </div>
 
   <nav id="bottom-nav">
@@ -564,6 +660,36 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
   </div>
 </div>
 
+
+<!-- شراء قطع -->
+<div class="modal-overlay" id="m-purchase">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🛒 تسجيل عملية شراء</div>
+    <div class="form-group">
+      <label class="form-label">نوع المشتريات</label>
+      <div style="display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.4rem">
+        <button class="fopt active" id="ptyp-1" onclick="selPurchType(this,'قطع غيار معدات')">⚙️ قطع غيار</button>
+        <button class="fopt" id="ptyp-2" onclick="selPurchType(this,'مواد بناء')">🧱 مواد بناء</button>
+        <button class="fopt" id="ptyp-3" onclick="selPurchType(this,'أدوات وعدد')">🔧 أدوات وعدد</button>
+        <button class="fopt" id="ptyp-6" onclick="selPurchType(this,'أخرى')">📦 أخرى</button>
+      </div>
+      <input type="hidden" id="pu-type" value="قطع غيار معدات"/>
+    </div>
+    <div class="form-group"><label class="form-label">اسم القطعة / المستلزم</label><input class="fi" id="pu-name" placeholder="مثال: فلتر زيت، برغي، حديد..."/></div>
+    <div class="fr">
+      <div class="form-group"><label class="form-label">الكمية</label><input class="fi" type="number" id="pu-qty" placeholder="1" value="1"/></div>
+      <div class="form-group"><label class="form-label">السعر الإجمالي (₪)</label><input class="fi" type="number" id="pu-cost" placeholder="0"/></div>
+    </div>
+    <div class="fr">
+      <div class="form-group"><label class="form-label">اسم المورد / المحل</label><input class="fi" id="pu-supplier" placeholder="اسم المورد أو المحل"/></div>
+      <div class="form-group"><label class="form-label">رقم الفاتورة (اختياري)</label><input class="fi" id="pu-invoice" placeholder="رقم الفاتورة" dir="ltr"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">ملاحظات</label><input class="fi" id="pu-note" placeholder="أي تفاصيل إضافية..."/></div>
+    <div class="fr"><button class="btn btn-ghost" onclick="closeModal('m-purchase')">إلغاء</button><button class="btn btn-gold" onclick="addPurchase()">✅ حفظ</button></div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="m-confirm">
   <div class="confirm-body">
     <div style="font-size:2.2rem;text-align:center;margin-bottom:.6rem">🗑️</div>
@@ -578,7 +704,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 <script>
 // ── STATE ──
 let CU=null,DB=null,REF=null,PUSH=null,ONVAL=null,REMOVE=null,SET=null,FBReady=false;
-let workers={},advances={},fuel={},trips={},crushers={},rentals={},maintenance={};
+let workers={},advances={},fuel={},trips={},crushers={},rentals={},maintenance={},purchases={};
 let opsTab='advances',selMats={},pendingDel={};
 let viewYear=new Date().getFullYear(),viewMonth=new Date().getMonth();
 let _renderTimer=null;
@@ -694,6 +820,7 @@ function listenAll(){
   listen('crushers',d=>{crushers=d||{};scheduleRender();});
   listen('rentals',d=>{rentals=d||{};scheduleRender();});
   listen('maintenance',d=>{maintenance=d||{};scheduleRender();});
+  listen('purchases',d=>{purchases=d||{};scheduleRender();});
   listen('users',d=>{
     const fb=d||{};
     USERS={admin:{pass:'admin123',role:'admin',name:'الأدمن',canEdit:true},supervisor:{pass:'super123',role:'supervisor',name:'المشرف',canEdit:true},...fb};
@@ -709,6 +836,7 @@ function loadLocal(){
   crushers=JSON.parse(localStorage.getItem('al3cr')||'{}');
   rentals=JSON.parse(localStorage.getItem('al3r')||'{}');
   maintenance=JSON.parse(localStorage.getItem('al3m')||'{}');
+  purchases=JSON.parse(localStorage.getItem('al3p')||'{}');
   renderAll();
 }
 function saveL(k,d){localStorage.setItem('al3'+k,JSON.stringify(d));}
@@ -718,6 +846,7 @@ function renderAll(){
   const activePage=document.querySelector('.page.active');
   if(activePage){
     if(activePage.id==='page-dash') renderDashboard();
+    if(activePage.id==='page-ops') renderCal();
     if(activePage.id==='page-users') renderUsersList();
   }
 }
@@ -757,6 +886,7 @@ function renderDashboard(){
   const mCrush=monthItems(crushers,y,m);
   const mRent=monthItems(rentals,y,m);
   const mMaint=monthItems(maintenance,y,m);
+  const mPurch=monthItems(purchases,y,m);
 
   const tAdv=mAdv.reduce((s,x)=>s+(+x.amount||0),0);
   const tFuel=mFuel.reduce((s,x)=>s+(+x.cost||0),0);
@@ -767,8 +897,9 @@ function renderDashboard(){
   const tInv=0;
   const tRent=mRent.reduce((s,x)=>s+(+x.total||(+x.daily*(+x.days||0))||0),0);
   const tMaint=mMaint.reduce((s,x)=>s+(+x.cost||0),0);
-  const total=tAdv+tFuel+tTrips+tCrush+tInv+tRent+tMaint;
-  const ops=mAdv.length+mFuel.length+mTrips.length+mCrush.length+mRent.length+mMaint.length;
+  const tPurch=mPurch.reduce((s,x)=>s+(+x.cost||0),0);
+  const total=tAdv+tFuel+tTrips+tCrush+tRent+tMaint+tPurch;
+  const ops=mAdv.length+mFuel.length+mTrips.length+mCrush.length+mRent.length+mMaint.length+(mPurch?mPurch.length:0);
 
   document.getElementById('d-total').textContent=num(total)+' ₪';
   document.getElementById('d-total-sub').textContent=ops+' عملية مسجلة';
@@ -784,6 +915,8 @@ function renderDashboard(){
   document.getElementById('d-rent-sub').textContent=mRent.length+' معدة';
   const dMEl=document.getElementById('d-maint');
   if(dMEl){dMEl.textContent=num(tMaint)+' ₪';document.getElementById('d-maint-sub').textContent=mMaint.length+' صيانة';}
+  const dPEl=document.getElementById('d-purch');
+  if(dPEl){dPEl.textContent=num(tPurch)+' ₪';document.getElementById('d-purch-sub').textContent=mPurch.length+' عملية';}
 
   const cats=[
     {lbl:'السلف',val:tAdv,cls:'gold'},
@@ -792,6 +925,7 @@ function renderDashboard(){
     {lbl:'الكسارات',val:tCrush,cls:'orange'},
     {lbl:'المعدات',val:tRent,cls:'purple'},
     {lbl:'الصيانة',val:tMaint,cls:'blue'},
+    {lbl:'المشتريات',val:tPurch,cls:'green'},
   ];
   const maxVal=Math.max(...cats.map(c=>c.val),1);
   document.getElementById('prog-bars').innerHTML=cats.map(c=>`<div class="prog-row"><span class="prog-label">${c.lbl}</span><div class="prog-bar-bg"><div class="prog-bar ${c.cls}" style="width:${Math.round(c.val/maxVal*100)}%"></div></div><span class="prog-val">${num(c.val)} ₪</span></div>`).join('');
@@ -807,8 +941,9 @@ function renderDashboard(){
     const dCrush=oa(crushers).filter(x=>itemDate(x)===ds);
     const dRent=oa(rentals).filter(x=>itemDate(x)===ds);
     const dMaint=oa(maintenance).filter(x=>itemDate(x)===ds);
-    const dayCost=dAdv.reduce((s,x)=>s+(+x.amount||0),0)+dFuel.reduce((s,x)=>s+(+x.cost||0),0)+dTrips.reduce((s,x)=>s+(+x.cost||0),0)+dCrush.reduce((s,x)=>s+(+x.cost||0),0)+dRent.reduce((s,x)=>s+(+x.total||(+x.daily*(+x.days||0))||0),0)+dMaint.reduce((s,x)=>s+(+x.cost||0),0);
-    const hasAct=dAdv.length||dFuel.length||dTrips.length||dCrush.length||dRent.length||dMaint.length;
+    const dPurch=oa(purchases).filter(x=>itemDate(x)===ds);
+    const dayCost=dAdv.reduce((s,x)=>s+(+x.amount||0),0)+dFuel.reduce((s,x)=>s+(+x.cost||0),0)+dTrips.reduce((s,x)=>s+(+x.cost||0),0)+dCrush.reduce((s,x)=>s+(+x.cost||0),0)+dRent.reduce((s,x)=>s+(+x.total||(+x.daily*(+x.days||0))||0),0)+dMaint.reduce((s,x)=>s+(+x.cost||0),0)+dPurch.reduce((s,x)=>s+(+x.cost||0),0);
+    const hasAct=dAdv.length||dFuel.length||dTrips.length||dCrush.length||dRent.length||dMaint.length||dPurch.length;
     if(hasAct)activeDays++;
     const isToday=ds===todayStr;
     const wkDay=new Date(ds).getDay();
@@ -841,7 +976,8 @@ function renderDashboard(){
 
 // ── DAY DETAIL ──
 function showDayDetail(ds){
-  prevPage=document.querySelector('.page.active')?.id?.replace('page-','')||'dash';
+  const activePg=document.querySelector('.page.active');
+  prevPage=activePg?.id?.replace('page-','')||'dash';
   const dateObj=new Date(ds+'T12:00:00');
   const label=dateObj.toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   document.getElementById('ddp-title').textContent=label;
@@ -852,6 +988,7 @@ function showDayDetail(ds){
   const dCrush=oa(crushers).filter(x=>itemDate(x)===ds);
   const dRent=oa(rentals).filter(x=>itemDate(x)===ds);
   const dMaint=oa(maintenance).filter(x=>itemDate(x)===ds);
+  const dPurch=oa(purchases).filter(x=>itemDate(x)===ds);
 
   const tAdv=dAdv.reduce((s,x)=>s+(+x.amount||0),0);
   const tFuel=dFuel.reduce((s,x)=>s+(+x.cost||0),0);
@@ -860,8 +997,9 @@ function showDayDetail(ds){
   const tInv=0;
   const tRent=dRent.reduce((s,x)=>s+(+x.total||(+x.daily*(+x.days||0))||0),0);
   const tMaint=dMaint.reduce((s,x)=>s+(+x.cost||0),0);
-  const total=tAdv+tFuel+tTrip+tCrush+tInv+tRent+tMaint;
-  const ops=dAdv.length+dFuel.length+dTrips.length+dCrush.length+dRent.length+dMaint.length;
+  const tPurch=dPurch.reduce((s,x)=>s+(+x.cost||0),0);
+  const total=tAdv+tFuel+tTrip+tCrush+tRent+tMaint+tPurch;
+  const ops=dAdv.length+dFuel.length+dTrips.length+dCrush.length+dRent.length+dMaint.length+(dPurch?dPurch.length:0);
 
   document.getElementById('ddp-sub').textContent=ops?`${ops} عملية · إجمالي ${num(total)} ₪`:'لا توجد عمليات في هذا اليوم';
   document.getElementById('ddp-hero').innerHTML=`
@@ -881,6 +1019,22 @@ function showDayDetail(ds){
   if(dTrips.length)html+=`<div class="dd-section-card"><div class="dd-sec-hdr"><span class="dd-sec-lbl">🚛 النقلات</span><span class="dd-sec-count">${dTrips.reduce((s,x)=>s+(+x.count||1),0)} نقلة · ${num(tTrip)} ₪</span></div>`+dTrips.map(x=>`<div class="dd-item"><div class="dd-item-ico" style="background:var(--green-dim)">🚛</div><div class="dd-item-body"><div class="dd-item-title">${x.material} · ${x.count} نقلة</div><div class="dd-item-sub">${x.route||'—'} · ${x.by||'—'}</div></div><div class="dd-item-right"><span class="dd-item-amt" style="color:var(--green2)">${num(x.cost)} ₪</span><span class="dd-item-time">${fmt(x)}</span></div><button class="dd-item-del" onclick="confirmDel('trips','${x._key}','trips','حذف هذه النقلة؟')">🗑️</button></div>`).join('')+`</div>`;
   if(dCrush.length)html+=`<div class="dd-section-card"><div class="dd-sec-hdr"><span class="dd-sec-lbl">🪨 الكسارات</span><span class="dd-sec-count">${dCrush.length} طلب · ${num(tCrush)} ₪</span></div>`+dCrush.map(x=>{const mts=Object.entries(x.materials||{});return`<div class="dd-item" style="align-items:flex-start"><div class="dd-item-ico" style="background:var(--orange-dim);margin-top:.1rem">🪨</div><div class="dd-item-body"><div class="dd-item-title">🏭 ${x.name}</div><div class="dd-item-sub">${x.note||''} · ${x.by||'—'}</div>${mts.length?`<div class="dd-mat-list">${mts.map(([k,v])=>`<span class="dd-mat-chip">${k} <span class="dd-mat-qty">${v}</span></span>`).join('')}</div>`:''}</div><div class="dd-item-right"><span class="dd-item-amt" style="color:var(--orange2)">${num(x.cost)} ₪</span><span class="dd-item-time">${fmt(x)}</span></div><button class="dd-item-del" onclick="confirmDel('crushers','${x._key}','crushers','حذف طلب كسارة ${x.name}؟')">🗑️</button></div>`;}).join('')+`</div>`;
   if(dRent.length)html+=`<div class="dd-section-card"><div class="dd-sec-hdr"><span class="dd-sec-lbl">🚜 المعدات المستأجرة</span><span class="dd-sec-count">${dRent.length} معدة · ${num(tRent)} ₪</span></div>`+dRent.map(x=>{const rc=+x.total||(+x.daily*(+x.days||0))||0;return`<div class="dd-item"><div class="dd-item-ico" style="background:var(--purple-dim)">🚜</div><div class="dd-item-body"><div class="dd-item-title">${x.name} · ${x.owner||'—'}</div><div class="dd-item-sub">${x.start||x.date} ← ${x.end||'—'} · ${x.days||0} يوم · ${x.note||''} · ${x.by||'—'}</div></div><div class="dd-item-right"><span class="dd-item-amt" style="color:var(--purple2)">-${num(rc)} ₪</span><span class="dd-item-time">${fmt(x)}</span></div><button class="dd-item-del" onclick="confirmDel('rentals','${x._key}','rentals','حذف سجل المعدة؟')">🗑️</button></div>`;}).join('')+`</div>`;
+  if(dPurch&&dPurch.length){
+    html+=`<div class="dd-section-card"><div class="dd-sec-hdr"><span class="dd-sec-lbl">🛒 المشتريات</span><span class="dd-sec-count">${dPurch.length} عملية · ${num(tPurch)} ₪</span></div>`+
+    dPurch.map(x=>`<div class="dd-item">
+      <div class="dd-item-ico" style="background:var(--green-dim)">🛒</div>
+      <div class="dd-item-body">
+        <div class="dd-item-title">${x.name} · ${x.type}</div>
+        <div class="dd-item-sub">${x.supplier||'—'} · الكمية: ${x.qty||1} · ${x.invoiceNo?'فاتورة: '+x.invoiceNo:''} · ${x.by||''}</div>
+        ${x.note?'<div style="font-size:.68rem;color:var(--text2);margin-top:.15rem">'+x.note+'</div>':''}
+      </div>
+      <div class="dd-item-right">
+        <span class="dd-item-amt" style="color:var(--green2)">-${num(x.cost)} ₪</span>
+        <span class="dd-item-time">${fmt(x)}</span>
+      </div>
+      <button class="dd-item-del" onclick="confirmDel('purchases','${x._key}','purchases','حذف الشراء؟')">🗑️</button>
+    </div>`).join('')+`</div>`;
+  }
   if(dMaint.length){
     html+=`<div class="dd-section-card"><div class="dd-sec-hdr"><span class="dd-sec-lbl">🔧 الصيانة</span><span class="dd-sec-count">${dMaint.length} سجل · ${num(tMaint)} ₪</span></div>`+
       dMaint.map(x=>`<div class="dd-item"><div class="dd-item-ico" style="background:var(--blue-dim)">🔧</div>
@@ -910,6 +1064,8 @@ function closeDayDetail(){
   const idx={'dash':0,'home':1,'workers':2,'ops':3,'users':4};
   const btn=navBtns[idx[prevPage]??1];
   switchPage(prevPage,btn);
+  // If coming from ops, re-render calendar
+  if(prevPage==='ops') renderCal();
 }
 
 // ── WORKERS ──
@@ -930,7 +1086,25 @@ function renderWorkers(){
   el.innerHTML=arr.map(w=>{
     const ta=oa(advances).filter(a=>a.workerName===w.name).reduce((s,a)=>s+(+a.amount||0),0);
     const ds=+w.dailySalary||+w.salary||0;const net=ds-ta;
-    return`<div class="wcard"><div class="wcard-hdr"><div class="wavatar">${w.name.charAt(0)}</div><div style="flex:1"><div style="font-weight:700;font-size:.92rem">${w.name}</div><div style="font-size:.7rem;color:var(--text2)">${w.role||'عامل'}</div></div><button class="del-btn" onclick="confirmDel('workers','${w._key}','workers','حذف العامل: ${w.name}؟')">🗑️</button></div><div class="wstats"><div class="wstat"><div class="wsv gold">${num(ds)}</div><div class="wsl">الراتب اليومي ₪</div></div><div class="wstat"><div class="wsv red">${num(ta)}</div><div class="wsl">السلف ₪</div></div><div class="wstat"><div class="wsv ${net>=0?'green':'red'}">${num(net)}</div><div class="wsl">المتبقي ₪</div></div></div></div>`;
+    const advCount=oa(advances).filter(a=>a.workerName===w.name).length;
+    return`<div class="wcard" style="cursor:pointer" onclick="showWorkerDetail('${w._key}')">
+      <div class="wcard-hdr">
+        <div class="wavatar">${w.name.charAt(0)}</div>
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:.92rem">${w.name}</div>
+          <div style="font-size:.7rem;color:var(--text2)">${w.role||'عامل'} · ${advCount} سلفة</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.4rem">
+          <span style="font-size:.7rem;color:var(--text2)">التفاصيل ←</span>
+          <button class="del-btn" onclick="event.stopPropagation();confirmDel('workers','${w._key}','workers','حذف العامل: ${w.name}؟')">🗑️</button>
+        </div>
+      </div>
+      <div class="wstats">
+        <div class="wstat"><div class="wsv gold">${num(ds)}</div><div class="wsl">الراتب اليومي ₪</div></div>
+        <div class="wstat"><div class="wsv red">${num(ta)}</div><div class="wsl">إجمالي السلف ₪</div></div>
+        <div class="wstat"><div class="wsv ${net>=0?'green':'red'}">${num(net)}</div><div class="wsl">المتبقي ₪</div></div>
+      </div>
+    </div>`;
   }).join('');
 }
 function fillW(){const s=document.getElementById('aw'),arr=oa(workers);s.innerHTML=arr.length?arr.map(w=>`<option>${w.name}</option>`).join(''):'<option>لا يوجد عمال</option>';}
@@ -1014,6 +1188,35 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 });
 
+async function addPurchase(){
+  if(!CU.canEdit){showToast('❌ ليس لديك صلاحية','error');return;}
+  const name=document.getElementById('pu-name').value.trim();
+  const type=document.getElementById('pu-type').value;
+  const qty=+document.getElementById('pu-qty').value||1;
+  const cost=+document.getElementById('pu-cost').value;
+  const supplier=document.getElementById('pu-supplier').value.trim();
+  const invoiceNo=document.getElementById('pu-invoice').value.trim();
+  const note=document.getElementById('pu-note').value.trim();
+  if(!name){showToast('❌ أدخل اسم القطعة','error');return;}
+  if(!cost){showToast('❌ أدخل السعر','error');return;}
+  const d={name,type,qty,cost,supplier,invoiceNo,note,date:today()};
+  if(FBReady)await fbAdd('purchases',d);
+  else{d.id=Date.now()+'';purchases[d.id]=d;saveL('p',purchases);renderAll();}
+  ['pu-name','pu-qty','pu-cost','pu-supplier','pu-invoice','pu-note'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value=id==='pu-qty'?'1':'';
+  });
+  selPurchType(document.getElementById('ptyp-1'),'قطع غيار معدات');
+  closeModal('m-purchase');
+  showToast('✅ تم تسجيل الشراء','success');
+}
+
+function selPurchType(btn,type){
+  document.getElementById('pu-type').value=type;
+  document.querySelectorAll('[id^="ptyp-"]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
 async function addMaintenance(){
   if(!CU.canEdit){showToast('❌ ليس لديك صلاحية','error');return;}
   const equip=document.getElementById('mn-equip').value.trim();
@@ -1046,8 +1249,8 @@ async function execDel(){
     try{await REMOVE(REF(DB,path+'/'+id));showToast('✅ تم الحذف','success');}
     catch(e){showToast('❌ فشل الحذف','error');}
   }else{
-    const maps={workers,advances,fuel,trips,crushers,rentals,maintenance};
-    const keys={workers:'w',advances:'a',fuel:'f',trips:'t',crushers:'cr',rentals:'r',maintenance:'m'};
+    const maps={workers,advances,fuel,trips,crushers,rentals,maintenance,purchases};
+    const keys={workers:'w',advances:'a',fuel:'f',trips:'t',crushers:'cr',rentals:'r',maintenance:'m',purchases:'p'};
     if(maps[lk]&&maps[lk][id]){delete maps[lk][id];saveL(keys[lk],maps[lk]);renderAll();showToast('✅ تم الحذف','success');}
   }
 }
@@ -1081,6 +1284,7 @@ function renderRecent(){
     ...todayItems(trips).map(x=>{return{ico:'🚛',icoCls:'green',t:`${x.material} · ${x.count} نقلة`,s:fmt(x),a:`${num(x.cost)} ₪`,c:'green',ts:x.ts||0}}),
     ...todayItems(crushers).map(x=>{return{ico:'🪨',icoCls:'orange',t:`كسارة · ${x.name}`,s:fmt(x),a:`${num(x.cost)} ₪`,c:'orange',ts:x.ts||0}}),
     ...todayItems(rentals).map(x=>{const rc=+x.total||(+x.daily*(+x.days||0))||0;return{ico:'🚜',icoCls:'purple',t:`معدة · ${x.name}`,s:fmt(x),a:`-${num(rc)} ₪`,c:'purple',ts:x.ts||0}}),
+    ...todayItems(purchases).map(x=>{return{ico:'🛒',icoCls:'green',t:`شراء · ${x.name}`,s:fmt(x),a:`-${num(x.cost)} ₪`,c:'green',ts:x.ts||0}}),
     ...todayItems(maintenance).map(x=>{return{ico:'🔧',icoCls:'blue',t:`صيانة · ${x.equip}`,s:fmt(x),a:`-${num(x.cost)} ₪`,c:'blue',ts:x.ts||0}}),
   ].sort((a,b)=>b.ts-a.ts).slice(0,8);
   const el=document.getElementById('recent');
@@ -1089,13 +1293,62 @@ function renderRecent(){
 }
 
 // ── NAV ──
+// ── CALENDAR ──
+let calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
+
+function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCal();}
+function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCal();}
+
+function renderCal(){
+  const y=calYear, m=calMonth;
+  document.getElementById('cal-month-label').textContent=`${AR_MONTHS[m]} ${y}`;
+  const now=new Date();
+  const isCurr=y===now.getFullYear()&&m===now.getMonth();
+  document.getElementById('cal-month-sub').textContent=isCurr?'الشهر الحالي':`${daysInMonth(y,m)} يوم`;
+
+  const firstDay=new Date(y,m,1).getDay(); // 0=Sun
+  const days=daysInMonth(y,m);
+  const todayStr=today();
+  let html='';
+
+  // Empty cells before first day
+  for(let i=0;i<firstDay;i++) html+=`<div class="cal-cell empty"></div>`;
+
+  for(let d=1;d<=days;d++){
+    const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dAdv=oa(advances).filter(x=>itemDate(x)===ds);
+    const dFuel=oa(fuel).filter(x=>itemDate(x)===ds);
+    const dTrips=oa(trips).filter(x=>itemDate(x)===ds);
+    const dCrush=oa(crushers).filter(x=>itemDate(x)===ds);
+    const dRent=oa(rentals).filter(x=>itemDate(x)===ds);
+    const dMaint=oa(maintenance).filter(x=>itemDate(x)===ds);
+    const dPurch2=oa(purchases).filter(x=>itemDate(x)===ds);
+    const hasAct=dAdv.length||dFuel.length||dTrips.length||dCrush.length||dRent.length||dMaint.length||dPurch2.length;
+    const dayCost=dAdv.reduce((s,x)=>s+(+x.amount||0),0)+dFuel.reduce((s,x)=>s+(+x.cost||0),0)+dTrips.reduce((s,x)=>s+(+x.cost||0),0)+dCrush.reduce((s,x)=>s+(+x.cost||0),0)+dRent.reduce((s,x)=>s+(+x.total||(+x.daily*(+x.days||0))||0),0)+dMaint.reduce((s,x)=>s+(+x.cost||0),0)+dPurch2.reduce((s,x)=>s+(+x.cost||0),0);
+    const isToday=ds===todayStr;
+    html+=`<div class="cal-cell${isToday?' today':''}${hasAct?' active-day':''}" onclick="showDayDetail('${ds}')">
+      <span class="cal-num">${d}</span>
+      <div class="cal-dots">
+        ${dAdv.length?'<span class="cal-dot gold"></span>':''}
+        ${dFuel.length?'<span class="cal-dot blue"></span>':''}
+        ${dTrips.length?'<span class="cal-dot green"></span>':''}
+        ${dCrush.length?'<span class="cal-dot orange"></span>':''}
+        ${dRent.length?'<span class="cal-dot purple"></span>':''}
+        ${dMaint.length?'<span class="cal-dot teal"></span>':''}
+      </div>
+      ${hasAct?`<span class="cal-cost">${num(dayCost)}</span>`:''}
+    </div>`;
+  }
+  document.getElementById('cal-grid').innerHTML=html;
+}
+
 function switchPage(p,btn){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
   if(btn) btn.classList.add('active');
   document.getElementById('bottom-nav').style.display='flex';
-  if(p==='ops')renderOps();
+  if(p==='ops'){calYear=new Date().getFullYear();calMonth=new Date().getMonth();renderCal();}
   if(p==='workers')renderWorkers();
   if(p==='dash')renderDashboard();
   if(p==='users')renderUsersList();
@@ -1105,6 +1358,80 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
 function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='show '+type;setTimeout(()=>t.className='',2500);}
 document.getElementById('lp')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+// ── WORKER DETAIL ──
+let wdWorker=null, wdYear=new Date().getFullYear(), wdMonth=new Date().getMonth();
+
+function showWorkerDetail(workerKey){
+  wdWorker=workers[workerKey];
+  if(!wdWorker) return;
+  wdYear=new Date().getFullYear();
+  wdMonth=new Date().getMonth();
+  document.getElementById('wd-name').textContent=wdWorker.name;
+  document.getElementById('wd-role').textContent=wdWorker.role||'عامل';
+  renderWorkerDetail();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-worker-detail').classList.add('active');
+  document.getElementById('bottom-nav').style.display='none';
+  window.scrollTo(0,0);
+}
+
+function closeWorkerDetail(){
+  document.getElementById('bottom-nav').style.display='flex';
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-workers').classList.add('active');
+  // Re-activate workers nav btn
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.nav-btn')[2].classList.add('active');
+}
+
+function wdPrevMonth(){wdMonth--;if(wdMonth<0){wdMonth=11;wdYear--;}renderWorkerDetail();}
+function wdNextMonth(){wdMonth++;if(wdMonth>11){wdMonth=0;wdYear++;}renderWorkerDetail();}
+
+function renderWorkerDetail(){
+  if(!wdWorker) return;
+  const ms=monthStr(wdYear,wdMonth);
+  document.getElementById('wd-month-label').textContent=AR_MONTHS[wdMonth]+' '+wdYear;
+
+  // All advances for this worker
+  const allAdv=oa(advances).filter(a=>a.workerName===wdWorker.name);
+  const monthAdv=allAdv.filter(a=>itemDate(a).startsWith(ms));
+  const totalAdv=allAdv.reduce((s,a)=>s+(+a.amount||0),0);
+  const monthAdvTotal=monthAdv.reduce((s,a)=>s+(+a.amount||0),0);
+
+  const ds=+wdWorker.dailySalary||+wdWorker.salary||0;
+  const net=ds-totalAdv;
+
+  document.getElementById('wd-salary').textContent=num(ds)+' ₪';
+  document.getElementById('wd-total-adv').textContent=num(totalAdv)+' ₪';
+  const netEl=document.getElementById('wd-net');
+  netEl.textContent=num(net)+' ₪';
+  netEl.style.color=net>=0?'var(--green2)':'var(--red2)';
+  document.getElementById('wd-adv-count').textContent=monthAdv.length+' سلفة · '+num(monthAdvTotal)+' ₪';
+
+  const el=document.getElementById('wd-advances-list');
+  if(!monthAdv.length){
+    el.innerHTML='<div class="empty-state"><div class="ei">💵</div><p>لا توجد سلف في '+AR_MONTHS[wdMonth]+'</p></div>';
+    return;
+  }
+  // Sort by date desc
+  const sorted=monthAdv.sort((a,b)=>new Date(itemDate(b))-new Date(itemDate(a)));
+  el.innerHTML=sorted.map(a=>{
+    const d=new Date(itemDate(a)+'T12:00:00');
+    const dateLabel=d.toLocaleDateString('ar-SA',{weekday:'long',month:'long',day:'numeric'});
+    return `<div class="li" style="margin-bottom:.4rem">
+      <div class="li-ico gold">💵</div>
+      <div class="li-body">
+        <div class="li-title">${num(a.amount)} ₪</div>
+        <div class="li-sub">${dateLabel} · ${a.note||'—'} · ${a.by||''}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.3rem">
+        <span style="font-family:'Readex Pro',sans-serif;font-weight:700;font-size:.88rem;color:var(--red2)">-${num(a.amount)} ₪</span>
+        ${fmt(a)?'<span style="font-size:.62rem;color:var(--text3)">'+fmt(a)+'</span>':''}
+      </div>
+    </div>`;
+  }).join('');
+}
 
 // ── USER MANAGEMENT ──
 function selectRole(role){
