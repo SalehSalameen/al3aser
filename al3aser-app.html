@@ -431,6 +431,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="kpi-card purple"><div class="kpi-ico">🚜</div><div class="kpi-val purple" id="d-rent">0</div><div class="kpi-lbl">تكلفة المعدات</div><div class="kpi-sub" id="d-rent-sub"></div></div>
       <div class="kpi-card blue"><div class="kpi-ico">🔩</div><div class="kpi-val blue" id="d-maint">0</div><div class="kpi-lbl">تكلفة الصيانة</div><div class="kpi-sub" id="d-maint-sub"></div></div>
       <div class="kpi-card green"><div class="kpi-ico">🛒</div><div class="kpi-val green" id="d-purch">0</div><div class="kpi-lbl">المشتريات</div><div class="kpi-sub" id="d-purch-sub"></div></div>
+      <div class="kpi-card blue"><div class="kpi-ico">📦</div><div class="kpi-val blue" id="d-receipt">0</div><div class="kpi-lbl">استلام قطع</div><div class="kpi-sub" id="d-receipt-sub"></div></div>
     </div>
     <div class="progress-section">
       <div class="prog-title">📈 توزيع المصروفات</div>
@@ -470,6 +471,8 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="quick-btn" onclick="openModal('m-rental')"><div class="qico">🚜</div><div class="qlbl">استئجار معدة</div></div>
       <div class="quick-btn" onclick="openModal('m-maint')"><div class="qico">🔩</div><div class="qlbl">صيانة معدة</div></div>
       <div class="quick-btn" onclick="openModal('m-purchase')"><div class="qico">🛒</div><div class="qlbl">شراء قطع</div></div>
+      <div class="quick-btn" onclick="openModal('m-receipt')"><div class="qico">📦</div><div class="qlbl">استلام قطع</div></div>
+      <div class="quick-btn" onclick="openAttendance()"><div class="qico">✅</div><div class="qlbl">شغل اليوم</div></div>
     </div>
     <div class="sec-hdr"><span class="sec-title">📋 آخر الأنشطة اليوم</span></div>
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:.75rem"><div id="recent"></div></div>
@@ -478,6 +481,14 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
   <!-- WORKERS -->
   <div class="page" id="page-workers">
     <div class="sec-hdr"><span class="sec-title">👷 العمال</span><button class="sec-action" onclick="openModal('m-wrkr')">+ إضافة</button></div>
+    <div id="today-att-banner" style="display:none;background:var(--green-dim);border:1px solid rgba(29,184,122,.2);border-radius:12px;padding:.65rem .9rem;margin-bottom:.75rem;cursor:pointer" onclick="openAttendance()">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:.8rem;font-weight:700;color:var(--green2)">✅ شغل اليوم</div>
+        <span style="font-size:.7rem;color:var(--text2)">تعديل ←</span>
+      </div>
+      <div style="font-size:.72rem;color:var(--text2);margin-top:.25rem" id="today-att-names"></div>
+    </div>
+    <button style="width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:.7rem;font-family:'Cairo',sans-serif;font-size:.85rem;font-weight:700;color:var(--green2);cursor:pointer;margin-bottom:.75rem;display:flex;align-items:center;justify-content:center;gap:.4rem" onclick="openAttendance()">✅ سجّل شغل اليوم</button>
     <div id="wlist"></div>
   </div>
 
@@ -515,6 +526,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
       <span style="display:flex;align-items:center;gap:.28rem;font-size:.67rem;color:var(--text2)"><span style="width:7px;height:7px;border-radius:50%;background:var(--purple2);flex-shrink:0"></span>معدات</span>
       <span style="display:flex;align-items:center;gap:.28rem;font-size:.67rem;color:var(--text2)"><span style="width:7px;height:7px;border-radius:50%;background:#1dd4c8;flex-shrink:0"></span>صيانة</span>
       <span style="display:flex;align-items:center;gap:.28rem;font-size:.67rem;color:var(--text2)"><span style="width:7px;height:7px;border-radius:50%;background:var(--green2);flex-shrink:0"></span>مشتريات</span>
+      <span style="display:flex;align-items:center;gap:.28rem;font-size:.67rem;color:var(--text2)"><span style="width:7px;height:7px;border-radius:50%;background:var(--blue2);flex-shrink:0"></span>استلام</span>
     </div>
     <div id="ops-content"></div>
   </div>
@@ -690,6 +702,67 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
   </div>
 </div>
 
+
+<!-- استلام قطع من الشركة -->
+<div class="modal-overlay" id="m-receipt">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📦 استلام قطع من الشركة</div>
+    <div class="form-group">
+      <label class="form-label">اسم القطعة / المادة</label>
+      <input class="fi" id="rc-name" placeholder="مثال: فلتر زيت، بلي، حديد..."/>
+    </div>
+    <div class="fr">
+      <div class="form-group">
+        <label class="form-label">الكمية</label>
+        <input class="fi" type="number" id="rc-qty" placeholder="1" value="1" oninput="calcReceiptTotal()"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">سعر الوحدة (₪)</label>
+        <input class="fi" type="number" id="rc-price" placeholder="0" oninput="calcReceiptTotal()"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">الإجمالي (₪) — يُحسب تلقائياً</label>
+      <input class="fi" type="number" id="rc-total" placeholder="0" style="background:var(--surface2);color:var(--gold);font-weight:700"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">تاريخ الاستلام</label>
+      <input class="fi" type="date" id="rc-date"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">ملاحظات (اختياري)</label>
+      <input class="fi" id="rc-note" placeholder="أي تفاصيل إضافية..."/>
+    </div>
+    <div class="fr">
+      <button class="btn btn-ghost" onclick="closeModal('m-receipt')">إلغاء</button>
+      <button class="btn btn-gold" onclick="addReceipt()">✅ حفظ</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- شغل اليوم -->
+<div class="modal-overlay" id="m-attendance">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✅ شغل اليوم</div>
+    <div style="font-size:.78rem;color:var(--text2);margin-bottom:.85rem;text-align:center" id="att-date-label"></div>
+    <div class="form-group">
+      <label class="form-label">اختر العمال الحاضرين</label>
+      <div id="att-workers-list" style="display:flex;flex-direction:column;gap:.4rem;max-height:300px;overflow-y:auto"></div>
+    </div>
+    <div style="background:var(--bg3);border-radius:10px;padding:.6rem .85rem;margin-bottom:.85rem;display:flex;justify-content:space-between">
+      <span style="font-size:.8rem;color:var(--text2)">عدد الحاضرين</span>
+      <span style="font-family:'Readex Pro',sans-serif;font-weight:700;color:var(--green2)" id="att-count">0</span>
+    </div>
+    <div class="fr">
+      <button class="btn btn-ghost" onclick="closeModal('m-attendance')">إلغاء</button>
+      <button class="btn btn-gold" onclick="saveAttendance()">✅ حفظ</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="m-confirm">
   <div class="confirm-body">
     <div style="font-size:2.2rem;text-align:center;margin-bottom:.6rem">🗑️</div>
@@ -704,7 +777,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 <script>
 // ── STATE ──
 let CU=null,DB=null,REF=null,PUSH=null,ONVAL=null,REMOVE=null,SET=null,FBReady=false;
-let workers={},advances={},fuel={},trips={},crushers={},rentals={},maintenance={},purchases={};
+let workers={},advances={},fuel={},trips={},crushers={},rentals={},maintenance={},purchases={},receipts={},attendance={};
 let opsTab='advances',selMats={},pendingDel={};
 let viewYear=new Date().getFullYear(),viewMonth=new Date().getMonth();
 let _renderTimer=null;
@@ -821,6 +894,8 @@ function listenAll(){
   listen('rentals',d=>{rentals=d||{};scheduleRender();});
   listen('maintenance',d=>{maintenance=d||{};scheduleRender();});
   listen('purchases',d=>{purchases=d||{};scheduleRender();});
+  listen('receipts',d=>{receipts=d||{};scheduleRender();});
+  listen('attendance',d=>{attendance=d||{};scheduleRender();});
   listen('users',d=>{
     const fb=d||{};
     USERS={admin:{pass:'admin123',role:'admin',name:'الأدمن',canEdit:true},supervisor:{pass:'super123',role:'supervisor',name:'المشرف',canEdit:true},...fb};
@@ -837,6 +912,8 @@ function loadLocal(){
   rentals=JSON.parse(localStorage.getItem('al3r')||'{}');
   maintenance=JSON.parse(localStorage.getItem('al3m')||'{}');
   purchases=JSON.parse(localStorage.getItem('al3p')||'{}');
+  receipts=JSON.parse(localStorage.getItem('al3rc')||'{}');
+  attendance=JSON.parse(localStorage.getItem('al3att')||'{}');
   renderAll();
 }
 function saveL(k,d){localStorage.setItem('al3'+k,JSON.stringify(d));}
@@ -887,6 +964,7 @@ function renderDashboard(){
   const mRent=monthItems(rentals,y,m);
   const mMaint=monthItems(maintenance,y,m);
   const mPurch=monthItems(purchases,y,m);
+  const mReceipt=monthItems(receipts,y,m);
 
   const tAdv=mAdv.reduce((s,x)=>s+(+x.amount||0),0);
   const tFuel=mFuel.reduce((s,x)=>s+(+x.cost||0),0);
@@ -898,8 +976,9 @@ function renderDashboard(){
   const tRent=mRent.reduce((s,x)=>s+(+x.total||(+x.daily*(+x.days||0))||0),0);
   const tMaint=mMaint.reduce((s,x)=>s+(+x.cost||0),0);
   const tPurch=mPurch.reduce((s,x)=>s+(+x.cost||0),0);
-  const total=tAdv+tFuel+tTrips+tCrush+tRent+tMaint+tPurch;
-  const ops=mAdv.length+mFuel.length+mTrips.length+mCrush.length+mRent.length+mMaint.length+(mPurch?mPurch.length:0);
+  const tReceipt=mReceipt.reduce((s,x)=>s+(+x.total||0),0);
+  const total=tAdv+tFuel+tTrips+tCrush+tRent+tMaint+tPurch+tReceipt;
+  const ops=mAdv.length+mFuel.length+mTrips.length+mCrush.length+mRent.length+mMaint.length+(mPurch?mPurch.length:0)+(mReceipt?mReceipt.length:0);
 
   document.getElementById('d-total').textContent=num(total)+' ₪';
   document.getElementById('d-total-sub').textContent=ops+' عملية مسجلة';
@@ -916,7 +995,9 @@ function renderDashboard(){
   const dMEl=document.getElementById('d-maint');
   if(dMEl){dMEl.textContent=num(tMaint)+' ₪';document.getElementById('d-maint-sub').textContent=mMaint.length+' صيانة';}
   const dPEl=document.getElementById('d-purch');
-  if(dPEl){dPEl.textContent=num(tPurch)+' ₪';document.getElementById('d-purch-sub').textContent=mPurch.length+' عملية';}
+  if(dPEl){dPEl.textContent=num(tPurch)+' ₪';document.getElementById('d-purch-sub').textContent=(mPurch?mPurch.length:0)+' عملية';}
+  const dRcEl=document.getElementById('d-receipt');
+  if(dRcEl){dRcEl.textContent=num(tReceipt)+' ₪';document.getElementById('d-receipt-sub').textContent=(mReceipt?mReceipt.length:0)+' قطعة';}
 
   const cats=[
     {lbl:'السلف',val:tAdv,cls:'gold'},
@@ -926,6 +1007,7 @@ function renderDashboard(){
     {lbl:'المعدات',val:tRent,cls:'purple'},
     {lbl:'الصيانة',val:tMaint,cls:'blue'},
     {lbl:'المشتريات',val:tPurch,cls:'green'},
+    {lbl:'استلام قطع',val:tReceipt,cls:'blue'},
   ];
   const maxVal=Math.max(...cats.map(c=>c.val),1);
   document.getElementById('prog-bars').innerHTML=cats.map(c=>`<div class="prog-row"><span class="prog-label">${c.lbl}</span><div class="prog-bar-bg"><div class="prog-bar ${c.cls}" style="width:${Math.round(c.val/maxVal*100)}%"></div></div><span class="prog-val">${num(c.val)} ₪</span></div>`).join('');
@@ -942,6 +1024,7 @@ function renderDashboard(){
     const dRent=oa(rentals).filter(x=>itemDate(x)===ds);
     const dMaint=oa(maintenance).filter(x=>itemDate(x)===ds);
     const dPurch=oa(purchases).filter(x=>itemDate(x)===ds);
+  const dReceipt=oa(receipts).filter(x=>itemDate(x)===ds);
     const dayCost=dAdv.reduce((s,x)=>s+(+x.amount||0),0)+dFuel.reduce((s,x)=>s+(+x.cost||0),0)+dTrips.reduce((s,x)=>s+(+x.cost||0),0)+dCrush.reduce((s,x)=>s+(+x.cost||0),0)+dRent.reduce((s,x)=>s+(+x.total||(+x.daily*(+x.days||0))||0),0)+dMaint.reduce((s,x)=>s+(+x.cost||0),0)+dPurch.reduce((s,x)=>s+(+x.cost||0),0);
     const hasAct=dAdv.length||dFuel.length||dTrips.length||dCrush.length||dRent.length||dMaint.length||dPurch.length;
     if(hasAct)activeDays++;
@@ -989,6 +1072,7 @@ function showDayDetail(ds){
   const dRent=oa(rentals).filter(x=>itemDate(x)===ds);
   const dMaint=oa(maintenance).filter(x=>itemDate(x)===ds);
   const dPurch=oa(purchases).filter(x=>itemDate(x)===ds);
+  const dReceipt=oa(receipts).filter(x=>itemDate(x)===ds);
 
   const tAdv=dAdv.reduce((s,x)=>s+(+x.amount||0),0);
   const tFuel=dFuel.reduce((s,x)=>s+(+x.cost||0),0);
@@ -998,8 +1082,9 @@ function showDayDetail(ds){
   const tRent=dRent.reduce((s,x)=>s+(+x.total||(+x.daily*(+x.days||0))||0),0);
   const tMaint=dMaint.reduce((s,x)=>s+(+x.cost||0),0);
   const tPurch=dPurch.reduce((s,x)=>s+(+x.cost||0),0);
-  const total=tAdv+tFuel+tTrip+tCrush+tRent+tMaint+tPurch;
-  const ops=dAdv.length+dFuel.length+dTrips.length+dCrush.length+dRent.length+dMaint.length+(dPurch?dPurch.length:0);
+  const tReceipt=dReceipt.reduce((s,x)=>s+(+x.total||0),0);
+  const total=tAdv+tFuel+tTrip+tCrush+tRent+tMaint+tPurch+tReceipt;
+  const ops=dAdv.length+dFuel.length+dTrips.length+dCrush.length+dRent.length+dMaint.length+(dPurch?dPurch.length:0)+(dReceipt?dReceipt.length:0);
 
   document.getElementById('ddp-sub').textContent=ops?`${ops} عملية · إجمالي ${num(total)} ₪`:'لا توجد عمليات في هذا اليوم';
   document.getElementById('ddp-hero').innerHTML=`
@@ -1019,6 +1104,34 @@ function showDayDetail(ds){
   if(dTrips.length)html+=`<div class="dd-section-card"><div class="dd-sec-hdr"><span class="dd-sec-lbl">🚛 النقلات</span><span class="dd-sec-count">${dTrips.reduce((s,x)=>s+(+x.count||1),0)} نقلة · ${num(tTrip)} ₪</span></div>`+dTrips.map(x=>`<div class="dd-item"><div class="dd-item-ico" style="background:var(--green-dim)">🚛</div><div class="dd-item-body"><div class="dd-item-title">${x.material} · ${x.count} نقلة</div><div class="dd-item-sub">${x.route||'—'} · ${x.by||'—'}</div></div><div class="dd-item-right"><span class="dd-item-amt" style="color:var(--green2)">${num(x.cost)} ₪</span><span class="dd-item-time">${fmt(x)}</span></div><button class="dd-item-del" onclick="confirmDel('trips','${x._key}','trips','حذف هذه النقلة؟')">🗑️</button></div>`).join('')+`</div>`;
   if(dCrush.length)html+=`<div class="dd-section-card"><div class="dd-sec-hdr"><span class="dd-sec-lbl">🪨 الكسارات</span><span class="dd-sec-count">${dCrush.length} طلب · ${num(tCrush)} ₪</span></div>`+dCrush.map(x=>{const mts=Object.entries(x.materials||{});return`<div class="dd-item" style="align-items:flex-start"><div class="dd-item-ico" style="background:var(--orange-dim);margin-top:.1rem">🪨</div><div class="dd-item-body"><div class="dd-item-title">🏭 ${x.name}</div><div class="dd-item-sub">${x.note||''} · ${x.by||'—'}</div>${mts.length?`<div class="dd-mat-list">${mts.map(([k,v])=>`<span class="dd-mat-chip">${k} <span class="dd-mat-qty">${v}</span></span>`).join('')}</div>`:''}</div><div class="dd-item-right"><span class="dd-item-amt" style="color:var(--orange2)">${num(x.cost)} ₪</span><span class="dd-item-time">${fmt(x)}</span></div><button class="dd-item-del" onclick="confirmDel('crushers','${x._key}','crushers','حذف طلب كسارة ${x.name}؟')">🗑️</button></div>`;}).join('')+`</div>`;
   if(dRent.length)html+=`<div class="dd-section-card"><div class="dd-sec-hdr"><span class="dd-sec-lbl">🚜 المعدات المستأجرة</span><span class="dd-sec-count">${dRent.length} معدة · ${num(tRent)} ₪</span></div>`+dRent.map(x=>{const rc=+x.total||(+x.daily*(+x.days||0))||0;return`<div class="dd-item"><div class="dd-item-ico" style="background:var(--purple-dim)">🚜</div><div class="dd-item-body"><div class="dd-item-title">${x.name} · ${x.owner||'—'}</div><div class="dd-item-sub">${x.start||x.date} ← ${x.end||'—'} · ${x.days||0} يوم · ${x.note||''} · ${x.by||'—'}</div></div><div class="dd-item-right"><span class="dd-item-amt" style="color:var(--purple2)">-${num(rc)} ₪</span><span class="dd-item-time">${fmt(x)}</span></div><button class="dd-item-del" onclick="confirmDel('rentals','${x._key}','rentals','حذف سجل المعدة؟')">🗑️</button></div>`;}).join('')+`</div>`;
+  // Attendance for this day
+  const dayAtt=oa(attendance).find(a=>a.date===ds);
+  if(dayAtt&&dayAtt.workers&&dayAtt.workers.length){
+    html+=`<div class="dd-section-card">
+      <div class="dd-sec-hdr">
+        <span class="dd-sec-lbl">✅ شغل اليوم</span>
+        <span class="dd-sec-count">${dayAtt.workers.length} عامل حاضر</span>
+      </div>
+      <div style="padding:.75rem .9rem;display:flex;flex-wrap:wrap;gap:.4rem">
+        ${dayAtt.workers.map(w=>`<span style="background:var(--green-dim);color:var(--green2);border:1px solid rgba(29,184,122,.2);padding:.25rem .65rem;border-radius:20px;font-size:.78rem;font-weight:700">👷 ${w}</span>`).join('')}
+      </div>
+    </div>`;
+  }
+  if(dReceipt&&dReceipt.length){
+    html+=`<div class="dd-section-card"><div class="dd-sec-hdr"><span class="dd-sec-lbl">📦 استلام قطع</span><span class="dd-sec-count">${dReceipt.length} قطعة · ${num(tReceipt)} ₪</span></div>`+
+    dReceipt.map(x=>`<div class="dd-item">
+      <div class="dd-item-ico" style="background:var(--blue-dim)">📦</div>
+      <div class="dd-item-body">
+        <div class="dd-item-title">${x.name}</div>
+        <div class="dd-item-sub">الكمية: ${x.qty||1} · السعر: ${num(x.price||0)} ₪ · ${x.note||''} · ${x.by||''}</div>
+      </div>
+      <div class="dd-item-right">
+        <span class="dd-item-amt" style="color:var(--blue2)">${num(x.total||0)} ₪</span>
+        <span class="dd-item-time">${fmt(x)}</span>
+      </div>
+      <button class="dd-item-del" onclick="confirmDel('receipts','${x._key}','receipts','حذف سجل الاستلام؟')">🗑️</button>
+    </div>`).join('')+`</div>`;
+  }
   if(dPurch&&dPurch.length){
     html+=`<div class="dd-section-card"><div class="dd-sec-hdr"><span class="dd-sec-lbl">🛒 المشتريات</span><span class="dd-sec-count">${dPurch.length} عملية · ${num(tPurch)} ₪</span></div>`+
     dPurch.map(x=>`<div class="dd-item">
@@ -1083,6 +1196,17 @@ async function addWorker(){
 function renderWorkers(){
   const el=document.getElementById('wlist'),arr=oa(workers);
   if(!arr.length){el.innerHTML='<div class="empty-state"><div class="ei">👷</div><p>لا يوجد عمال مسجلون</p></div>';return;}
+  // Show today attendance banner
+  const todayAtt=oa(attendance).find(a=>a.date===today());
+  const banner=document.getElementById('today-att-banner');
+  if(banner){
+    if(todayAtt&&todayAtt.workers&&todayAtt.workers.length){
+      banner.style.display='block';
+      document.getElementById('today-att-names').textContent=todayAtt.workers.join(' · ');
+    } else {
+      banner.style.display='none';
+    }
+  }
   el.innerHTML=arr.map(w=>{
     const ta=oa(advances).filter(a=>a.workerName===w.name).reduce((s,a)=>s+(+a.amount||0),0);
     const ds=+w.dailySalary||+w.salary||0;const net=ds-ta;
@@ -1188,6 +1312,34 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 });
 
+function calcReceiptTotal(){
+  const qty=+document.getElementById('rc-qty').value||0;
+  const price=+document.getElementById('rc-price').value||0;
+  if(qty&&price) document.getElementById('rc-total').value=(qty*price).toFixed(2);
+}
+
+async function addReceipt(){
+  if(!CU.canEdit){showToast('❌ ليس لديك صلاحية','error');return;}
+  const name=document.getElementById('rc-name').value.trim();
+  const qty=+document.getElementById('rc-qty').value||1;
+  const price=+document.getElementById('rc-price').value;
+  const date=document.getElementById('rc-date').value||today();
+  const note=document.getElementById('rc-note').value.trim();
+  if(!name){showToast('❌ أدخل اسم القطعة','error');return;}
+  const manualTotal=+document.getElementById('rc-total').value;
+  const total=manualTotal||(qty*price)||0;
+  const d={name,qty,price,total,date,note};
+  if(FBReady)await fbAdd('receipts',d);
+  else{d.id=Date.now()+'';receipts[d.id]=d;saveL('rc',receipts);renderAll();}
+  ['rc-name','rc-qty','rc-price','rc-total','rc-note'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value=id==='rc-qty'?'1':'';
+  });
+  document.getElementById('rc-date').value='';
+  closeModal('m-receipt');
+  showToast('✅ تم تسجيل الاستلام','success');
+}
+
 async function addPurchase(){
   if(!CU.canEdit){showToast('❌ ليس لديك صلاحية','error');return;}
   const name=document.getElementById('pu-name').value.trim();
@@ -1249,8 +1401,8 @@ async function execDel(){
     try{await REMOVE(REF(DB,path+'/'+id));showToast('✅ تم الحذف','success');}
     catch(e){showToast('❌ فشل الحذف','error');}
   }else{
-    const maps={workers,advances,fuel,trips,crushers,rentals,maintenance,purchases};
-    const keys={workers:'w',advances:'a',fuel:'f',trips:'t',crushers:'cr',rentals:'r',maintenance:'m',purchases:'p'};
+    const maps={workers,advances,fuel,trips,crushers,rentals,maintenance,purchases,receipts};
+    const keys={workers:'w',advances:'a',fuel:'f',trips:'t',crushers:'cr',rentals:'r',maintenance:'m',purchases:'p',receipts:'rc'};
     if(maps[lk]&&maps[lk][id]){delete maps[lk][id];saveL(keys[lk],maps[lk]);renderAll();showToast('✅ تم الحذف','success');}
   }
 }
@@ -1284,6 +1436,7 @@ function renderRecent(){
     ...todayItems(trips).map(x=>{return{ico:'🚛',icoCls:'green',t:`${x.material} · ${x.count} نقلة`,s:fmt(x),a:`${num(x.cost)} ₪`,c:'green',ts:x.ts||0}}),
     ...todayItems(crushers).map(x=>{return{ico:'🪨',icoCls:'orange',t:`كسارة · ${x.name}`,s:fmt(x),a:`${num(x.cost)} ₪`,c:'orange',ts:x.ts||0}}),
     ...todayItems(rentals).map(x=>{const rc=+x.total||(+x.daily*(+x.days||0))||0;return{ico:'🚜',icoCls:'purple',t:`معدة · ${x.name}`,s:fmt(x),a:`-${num(rc)} ₪`,c:'purple',ts:x.ts||0}}),
+    ...todayItems(receipts).map(x=>{return{ico:'📦',icoCls:'blue',t:`استلام · ${x.name}`,s:fmt(x),a:`${num(x.total||0)} ₪`,c:'blue',ts:x.ts||0}}),
     ...todayItems(purchases).map(x=>{return{ico:'🛒',icoCls:'green',t:`شراء · ${x.name}`,s:fmt(x),a:`-${num(x.cost)} ₪`,c:'green',ts:x.ts||0}}),
     ...todayItems(maintenance).map(x=>{return{ico:'🔧',icoCls:'blue',t:`صيانة · ${x.equip}`,s:fmt(x),a:`-${num(x.cost)} ₪`,c:'blue',ts:x.ts||0}}),
   ].sort((a,b)=>b.ts-a.ts).slice(0,8);
@@ -1323,8 +1476,9 @@ function renderCal(){
     const dRent=oa(rentals).filter(x=>itemDate(x)===ds);
     const dMaint=oa(maintenance).filter(x=>itemDate(x)===ds);
     const dPurch2=oa(purchases).filter(x=>itemDate(x)===ds);
-    const hasAct=dAdv.length||dFuel.length||dTrips.length||dCrush.length||dRent.length||dMaint.length||dPurch2.length;
-    const dayCost=dAdv.reduce((s,x)=>s+(+x.amount||0),0)+dFuel.reduce((s,x)=>s+(+x.cost||0),0)+dTrips.reduce((s,x)=>s+(+x.cost||0),0)+dCrush.reduce((s,x)=>s+(+x.cost||0),0)+dRent.reduce((s,x)=>s+(+x.total||(+x.daily*(+x.days||0))||0),0)+dMaint.reduce((s,x)=>s+(+x.cost||0),0)+dPurch2.reduce((s,x)=>s+(+x.cost||0),0);
+    const dReceipt=oa(receipts).filter(x=>itemDate(x)===ds);
+    const hasAct=dAdv.length||dFuel.length||dTrips.length||dCrush.length||dRent.length||dMaint.length||dPurch2.length||dReceipt.length;
+    const dayCost=dAdv.reduce((s,x)=>s+(+x.amount||0),0)+dFuel.reduce((s,x)=>s+(+x.cost||0),0)+dTrips.reduce((s,x)=>s+(+x.cost||0),0)+dCrush.reduce((s,x)=>s+(+x.cost||0),0)+dRent.reduce((s,x)=>s+(+x.total||(+x.daily*(+x.days||0))||0),0)+dMaint.reduce((s,x)=>s+(+x.cost||0),0)+dPurch2.reduce((s,x)=>s+(+x.cost||0),0)+dReceipt.reduce((s,x)=>s+(+x.total||0),0);
     const isToday=ds===todayStr;
     html+=`<div class="cal-cell${isToday?' today':''}${hasAct?' active-day':''}" onclick="showDayDetail('${ds}')">
       <span class="cal-num">${d}</span>
@@ -1335,6 +1489,9 @@ function renderCal(){
         ${dCrush.length?'<span class="cal-dot orange"></span>':''}
         ${dRent.length?'<span class="cal-dot purple"></span>':''}
         ${dMaint.length?'<span class="cal-dot teal"></span>':''}
+        ${dPurch2.length?'<span class="cal-dot green"></span>':''}
+        ${dReceipt.length?'<span class="cal-dot blue"></span>':''}
+        ${oa(attendance).some(a=>a.date===ds&&a.workers&&a.workers.length)?'<span class="cal-dot green"></span>':''}
       </div>
       ${hasAct?`<span class="cal-cost">${num(dayCost)}</span>`:''}
     </div>`;
@@ -1353,11 +1510,78 @@ function switchPage(p,btn){
   if(p==='dash')renderDashboard();
   if(p==='users')renderUsersList();
 }
-function openModal(id){if(id==='m-adv')fillW();document.getElementById(id).classList.add('open');}
+function openModal(id){if(id==='m-adv')fillW();if(id==='m-receipt'){document.getElementById('rc-date').value=today();};document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
 function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='show '+type;setTimeout(()=>t.className='',2500);}
 document.getElementById('lp')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+// ── ATTENDANCE ──
+function openAttendance(){
+  const todayStr=today();
+  const d=new Date();
+  document.getElementById('att-date-label').textContent=
+    d.toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  // Get today's saved attendance if any
+  const todayAtt=oa(attendance).find(a=>a.date===todayStr);
+  const savedWorkers=todayAtt?todayAtt.workers||[]:[];
+
+  const workerArr=oa(workers);
+  if(!workerArr.length){
+    document.getElementById('att-workers-list').innerHTML=
+      '<div class="empty-state"><div class="ei">👷</div><p>لا يوجد عمال مسجلون</p></div>';
+  } else {
+    document.getElementById('att-workers-list').innerHTML=workerArr.map(w=>`
+      <label style="display:flex;align-items:center;gap:.75rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.65rem .85rem;cursor:pointer;transition:border-color .2s" 
+             onclick="toggleAttWorker(this)">
+        <input type="checkbox" value="${w.name}" 
+               ${savedWorkers.includes(w.name)?'checked':''} 
+               style="width:16px;height:16px;accent-color:var(--green2);cursor:pointer"
+               onchange="updateAttCount()">
+        <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--gold3),var(--gold2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#000;flex-shrink:0">${w.name.charAt(0)}</div>
+        <div>
+          <div style="font-weight:700;font-size:.88rem">${w.name}</div>
+          <div style="font-size:.68rem;color:var(--text2)">${w.role||'عامل'}</div>
+        </div>
+      </label>`).join('');
+  }
+  updateAttCount();
+  openModal('m-attendance');
+}
+
+function toggleAttWorker(label){
+  const cb=label.querySelector('input[type=checkbox]');
+  cb.checked=!cb.checked;
+  label.style.borderColor=cb.checked?'var(--green2)':'var(--border)';
+  updateAttCount();
+}
+
+function updateAttCount(){
+  const checked=document.querySelectorAll('#att-workers-list input:checked').length;
+  document.getElementById('att-count').textContent=checked+' عامل';
+}
+
+async function saveAttendance(){
+  const todayStr=today();
+  const checked=[...document.querySelectorAll('#att-workers-list input:checked')].map(cb=>cb.value);
+  if(!checked.length){showToast('❌ اختر عامل واحد على الأقل','error');return;}
+
+  // Remove old attendance for today if exists
+  const todayAtt=oa(attendance).find(a=>a.date===todayStr);
+  if(todayAtt&&FBReady&&DB){
+    await REMOVE(REF(DB,'attendance/'+todayAtt._key));
+  } else if(todayAtt){
+    delete attendance[todayAtt._key];
+  }
+
+  const d={date:todayStr,workers:checked};
+  if(FBReady)await fbAdd('attendance',d);
+  else{d.id=Date.now()+'';attendance[d.id]=d;saveL('att',attendance);renderAll();}
+
+  closeModal('m-attendance');
+  showToast('✅ تم حفظ شغل اليوم ('+checked.length+' عمال)','success');
+}
 
 // ── WORKER DETAIL ──
 let wdWorker=null, wdYear=new Date().getFullYear(), wdMonth=new Date().getMonth();
