@@ -344,6 +344,12 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 .cal-legend{display:flex;flex-wrap:wrap;gap:.5rem .85rem;padding:.5rem .25rem;margin-bottom:.75rem}
 .cal-legend span{display:flex;align-items:center;gap:.3rem;font-size:.7rem;color:var(--text2);font-weight:600}
 
+@media print{
+  body * {visibility:hidden!important;}
+  #print-area, #print-area * {visibility:visible!important;}
+  #print-area{position:absolute!important;left:0!important;top:0!important;right:auto!important;width:100%!important;background:#fff!important;color:#000!important;padding:20px!important;font-family:'Cairo',sans-serif!important;direction:rtl!important;visibility:visible!important;}
+}
+#print-area{position:absolute;left:-9999px;top:-9999px;visibility:hidden}
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
@@ -420,8 +426,12 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
         <div class="total-val" id="d-total">0 ₪</div>
         <div style="font-size:.7rem;color:var(--text2);margin-top:.2rem" id="d-total-sub"></div>
       </div>
-      <div class="total-ico">💰</div>
+<div class="total-ico">💰</div>
     </div>
+    <button onclick="exportMonthReport()" style="width:100%;background:linear-gradient(135deg,var(--gold3),var(--gold2));border:none;border-radius:12px;padding:.85rem;font-family:'Cairo',sans-serif;font-size:.9rem;font-weight:700;color:#000;cursor:pointer;margin-bottom:.85rem;display:flex;align-items:center;justify-content:center;gap:.4rem;box-shadow:0 4px 12px rgba(212,168,67,.25)">
+      <span style="font-size:1.1rem">📄</span>
+      <span>تصدير التقرير الشهري كـ PDF</span>
+    </button>
     <div class="kpi-grid">
       <div class="kpi-card gold" style="cursor:pointer" onclick="showCatDetail('advances')"><div class="kpi-ico">💵</div><div class="kpi-val gold" id="d-adv">0</div><div class="kpi-lbl">إجمالي السلف</div><div class="kpi-sub" id="d-adv-sub"></div><div style="font-size:.55rem;color:var(--text3);margin-top:.15rem">← تفاصيل</div></div>
       <div class="kpi-card blue" style="cursor:pointer" onclick="showCatDetail('fuel')"><div class="kpi-ico">⛽</div><div class="kpi-val blue" id="d-fuel">0</div><div class="kpi-lbl">تكلفة الوقود</div><div class="kpi-sub" id="d-fuel-sub"></div><div style="font-size:.55rem;color:var(--text3);margin-top:.15rem">← تفاصيل</div></div>
@@ -597,6 +607,45 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
       </div>
       <div id="wd-advances-list"></div>
     </div>
+  </div>
+
+  <!-- ══ VIEWER DASHBOARD - شغل اليوم ══ -->
+  <div class="page" id="page-viewer">
+    <!-- Hero Card -->
+    <div style="background:linear-gradient(135deg,#1a2440 0%,#0f1830 50%,#1a2440 100%);border:1px solid rgba(212,168,67,.2);border-radius:20px;padding:1.5rem 1.25rem;margin-bottom:1rem;text-align:center;position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.3)">
+      <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(212,168,67,.15),transparent 70%)"></div>
+      <div style="position:absolute;bottom:-30px;left:-30px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(29,184,122,.1),transparent 70%)"></div>
+      <div style="font-size:.75rem;color:var(--text2);margin-bottom:.4rem;font-weight:600">🌟 شغل اليوم</div>
+      <div style="font-family:'Readex Pro',sans-serif;font-size:1.4rem;font-weight:700;color:var(--gold);margin-bottom:.3rem" id="vw-today-name"></div>
+      <div style="font-size:.85rem;color:var(--text2)" id="vw-today-date"></div>
+    </div>
+
+    <!-- Today Stats Grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1rem">
+      <div style="background:linear-gradient(135deg,rgba(212,168,67,.15),rgba(212,168,67,.04));border:1px solid rgba(212,168,67,.25);border-radius:16px;padding:1.1rem .9rem;text-align:center;transition:transform .2s">
+        <div style="font-size:1.7rem;margin-bottom:.4rem">💰</div>
+        <div style="font-family:'Readex Pro',sans-serif;font-weight:800;font-size:1.3rem;color:var(--gold)" id="vw-today-total">0 ₪</div>
+        <div style="font-size:.7rem;color:var(--text2);margin-top:.25rem;font-weight:600">إجمالي اليوم</div>
+      </div>
+      <div style="background:linear-gradient(135deg,rgba(29,184,122,.15),rgba(29,184,122,.04));border:1px solid rgba(29,184,122,.25);border-radius:16px;padding:1.1rem .9rem;text-align:center;transition:transform .2s">
+        <div style="font-size:1.7rem;margin-bottom:.4rem">⚡</div>
+        <div style="font-family:'Readex Pro',sans-serif;font-weight:800;font-size:1.3rem;color:var(--green2)" id="vw-today-ops">0</div>
+        <div style="font-size:.7rem;color:var(--text2);margin-top:.25rem;font-weight:600">عملية اليوم</div>
+      </div>
+    </div>
+
+    <!-- Today's Workers (Attendance) -->
+    <div id="vw-attendance-section"></div>
+
+    <!-- Today's Note -->
+    <div id="vw-note-section"></div>
+
+    <!-- All operations of the day -->
+    <div class="sec-hdr" style="margin-top:1rem">
+      <span class="sec-title">📋 عمليات اليوم</span>
+      <span style="background:var(--gold-dim);color:var(--gold);font-size:.65rem;font-weight:700;padding:.2rem .6rem;border-radius:10px;border:1px solid rgba(212,168,67,.2)" id="vw-ops-badge">0 عملية</span>
+    </div>
+    <div id="vw-today-ops-list"></div>
   </div>
 
   <nav id="bottom-nav">
@@ -796,6 +845,7 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
 </div>
 
 <div id="toast"></div>
+<div id="print-area"></div>
 
 <script>
 // ── STATE ──
@@ -871,12 +921,12 @@ function applyRoles(){
   const isViewer=!CU.canEdit;
   const navBtns=document.querySelectorAll('.nav-btn');
   if(isViewer){
+    // Hide all nav, show only viewer dashboard
     navBtns.forEach(b=>b.style.display='none');
-    navBtns[0].style.display='';
-    navBtns[0].classList.add('active');
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.getElementById('page-dash').classList.add('active');
-    setTimeout(()=>renderDashboard(),200);
+    document.getElementById('page-viewer').classList.add('active');
+    setTimeout(()=>renderViewerDash(),200);
+    document.getElementById('bottom-nav').style.display='none';
     document.getElementById('tu').innerHTML=`<span style="background:var(--blue-dim);color:var(--blue2);border:1px solid rgba(61,127,255,.2);padding:.15rem .5rem;border-radius:8px;font-size:.65rem;font-weight:700">👁️ عرض فقط</span>`;
   } else {
     navBtns.forEach(b=>b.style.display='');
@@ -950,6 +1000,7 @@ function renderAll(){
     if(activePage.id==='page-dash') renderDashboard();
     if(activePage.id==='page-ops') renderCal();
     if(activePage.id==='page-users') renderUsersList();
+    if(activePage.id==='page-viewer') renderViewerDash();
   }
 }
 
@@ -1056,25 +1107,26 @@ function renderDashboard(){
     const isToday=ds===todayStr;
     const wkDay=new Date(ds).getDay();
     const dayNote=oa(dayNotes).find(n=>n.date===ds);
-    rows+=`<div class="day-row${isToday?' today':''}" style="cursor:pointer">
-      <div onclick="showDayDetail('${ds}')" style="display:contents">
-        <div><div class="day-num" style="${isToday?'color:var(--gold)':''}">${d}</div><div style="font-size:.58rem;color:var(--text3)">${AR_DAYS[wkDay]}</div></div>
-        <div class="day-acts">
-          ${dAdv.length?'<div class="day-dot gold"></div>':''}
-          ${dFuel.length?'<div class="day-dot blue"></div>':''}
-          ${dTrips.length?'<div class="day-dot green"></div>':''}
-          ${dCrush.length?'<div class="day-dot orange"></div>':''}
-          ${dRent.length?'<div class="day-dot purple"></div>':''}
-          ${dMaint.length?'<div class="day-dot blue"></div>':''}
-          ${dayNote?'<div class="day-dot" style="background:var(--text2)"></div>':''}
-          ${!hasAct&&!dayNote?'<span style="font-size:.62rem;color:var(--text3)">—</span>':''}
-        </div>
-        <div class="day-cost">${hasAct?num(dayCost)+' ₪':'—'}</div>
+    rows+=`<div class="day-row${isToday?' today':''}" onclick="showDayDetail('${ds}')">
+      <div>
+        <div class="day-num" style="${isToday?'color:var(--gold)':''}">${d}</div>
+        <div style="font-size:.58rem;color:var(--text3)">${AR_DAYS[wkDay]}</div>
       </div>
-      <div style="display:flex;align-items:center;gap:.3rem">
-        ${dayNote?`<span style="font-size:.6rem;color:var(--text2);max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${dayNote.text}">${dayNote.text}</span>`:''}
-        <button style="width:22px;height:22px;border-radius:6px;border:none;background:${dayNote?'var(--gold-dim)':'var(--surface2)'};color:${dayNote?'var(--gold)':'var(--text3)'};font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0" 
-                onclick="event.stopPropagation();openDayNote('${ds}')" title="إضافة ملاحظة">📝</button>
+      <div class="day-acts">
+        ${dAdv.length?'<div class="day-dot gold"></div>':''}
+        ${dFuel.length?'<div class="day-dot blue"></div>':''}
+        ${dTrips.length?'<div class="day-dot green"></div>':''}
+        ${dCrush.length?'<div class="day-dot orange"></div>':''}
+        ${dRent.length?'<div class="day-dot purple"></div>':''}
+        ${dMaint.length?'<div class="day-dot teal"></div>':''}
+        ${dayNote?'<div class="day-dot" style="background:var(--text2)"></div>':''}
+        ${!hasAct&&!dayNote?'<span style="font-size:.62rem;color:var(--text3)">—</span>':''}
+      </div>
+      <div class="day-cost">${hasAct?num(dayCost)+' ₪':'—'}</div>
+      <div style="display:flex;align-items:center;gap:.25rem" onclick="event.stopPropagation()">
+        ${dayNote?'<span style="font-size:.58rem;color:var(--gold);max-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📝</span>':''}
+        <button style="width:20px;height:20px;border-radius:5px;border:none;background:${dayNote?'var(--gold-dim)':'var(--surface2)'};color:${dayNote?'var(--gold)':'var(--text3)'};font-size:.65rem;cursor:pointer;flex-shrink:0" 
+                onclick="openDayNote('${ds}')">✏️</button>
       </div>
     </div>`;
   }
@@ -1487,6 +1539,273 @@ function renderRecent(){
 }
 
 // ── NAV ──
+// ── VIEWER DASHBOARD ──
+function renderViewerDash(){
+  const now=new Date();
+  const todayStr=today();
+  const dayName=now.toLocaleDateString('ar-SA',{weekday:'long'});
+  const fullDate=now.toLocaleDateString('ar-SA',{year:'numeric',month:'long',day:'numeric'});
+
+  document.getElementById('vw-today-name').textContent=dayName;
+  document.getElementById('vw-today-date').textContent=fullDate;
+
+  // Today items
+  const dAdv=oa(advances).filter(x=>itemDate(x)===todayStr);
+  const dFuel=oa(fuel).filter(x=>itemDate(x)===todayStr);
+  const dTrips=oa(trips).filter(x=>itemDate(x)===todayStr);
+  const dCrush=oa(crushers).filter(x=>itemDate(x)===todayStr);
+  const dRent=oa(rentals).filter(x=>itemDate(x)===todayStr);
+  const dMaint=oa(maintenance).filter(x=>itemDate(x)===todayStr);
+  const dPurch=oa(purchases).filter(x=>itemDate(x)===todayStr);
+  const dReceipt=oa(receipts).filter(x=>itemDate(x)===todayStr);
+
+  const tAdv=dAdv.reduce((s,x)=>s+(+x.amount||0),0);
+  const tFuel=dFuel.reduce((s,x)=>s+(+x.cost||0),0);
+  const tTrips=dTrips.reduce((s,x)=>s+(+x.cost||0),0);
+  const tCrush=dCrush.reduce((s,x)=>s+(+x.cost||0),0);
+  const tRent=dRent.reduce((s,x)=>s+(+x.total||(+x.daily*(+x.days||0))||0),0);
+  const tMaint=dMaint.reduce((s,x)=>s+(+x.cost||0),0);
+  const tPurch=dPurch.reduce((s,x)=>s+(+x.cost||0),0);
+  const total=tAdv+tFuel+tTrips+tCrush+tRent+tMaint+tPurch;
+  const opsCount=dAdv.length+dFuel.length+dTrips.length+dCrush.length+dRent.length+dMaint.length+dPurch.length+dReceipt.length;
+
+  document.getElementById('vw-today-total').textContent=num(total)+' ₪';
+  document.getElementById('vw-today-ops').textContent=opsCount;
+  document.getElementById('vw-ops-badge').textContent=opsCount+' عملية';
+
+  // Today's attendance section
+  const todayAtt=oa(attendance).find(a=>a.date===todayStr);
+  const attEl=document.getElementById('vw-attendance-section');
+  if(todayAtt&&todayAtt.workers&&todayAtt.workers.length){
+    attEl.innerHTML='<div style="background:linear-gradient(135deg,rgba(29,184,122,.1),rgba(29,184,122,.02));border:1px solid rgba(29,184,122,.2);border-radius:14px;padding:1rem;margin-bottom:1rem">'+
+      '<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.65rem">'+
+        '<span style="font-size:1.1rem">✅</span>'+
+        '<span style="font-size:.85rem;font-weight:700;color:var(--green2)">شغل اليوم</span>'+
+        '<span style="margin-right:auto;background:var(--green-dim);color:var(--green2);font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:8px">'+todayAtt.workers.length+' عامل</span>'+
+      '</div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:.4rem">'+
+        todayAtt.workers.map(w=>'<span style="background:var(--green-dim);color:var(--green2);border:1px solid rgba(29,184,122,.2);padding:.3rem .7rem;border-radius:20px;font-size:.78rem;font-weight:700">👷 '+w+'</span>').join('')+
+      '</div>'+
+    '</div>';
+  } else {
+    attEl.innerHTML='';
+  }
+
+  // Today's note
+  const todayNote=oa(dayNotes).find(n=>n.date===todayStr);
+  const noteEl=document.getElementById('vw-note-section');
+  if(todayNote&&todayNote.text){
+    noteEl.innerHTML='<div style="background:linear-gradient(135deg,rgba(212,168,67,.08),rgba(212,168,67,.02));border:1px solid rgba(212,168,67,.2);border-radius:14px;padding:1rem;margin-bottom:1rem">'+
+      '<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem">'+
+        '<span style="font-size:1.1rem">📝</span>'+
+        '<span style="font-size:.85rem;font-weight:700;color:var(--gold)">ملاحظة اليوم</span>'+
+      '</div>'+
+      '<div style="font-size:.85rem;color:var(--text);line-height:1.6">'+todayNote.text+'</div>'+
+    '</div>';
+  } else {
+    noteEl.innerHTML='';
+  }
+
+  // Build all ops list for today
+  const allOps=[
+    ...dAdv.map(x=>({...x,_cat:'سلفة',_ico:'💵',_color:'var(--gold)',_bg:'rgba(212,168,67,.12)',_amt:'-'+num(x.amount)+' ₪',_title:x.workerName,_sub:x.note||''})),
+    ...dFuel.map(x=>({...x,_cat:'وقود',_ico:x.type==='بنزين'?'⛽':x.type==='زيت'?'🟡':'🛢️',_color:'var(--blue2)',_bg:'rgba(61,127,255,.12)',_amt:num(x.cost)+' ₪',_title:x.type+' · '+(x.machine||''),_sub:x.liters+' لتر'})),
+    ...dTrips.map(x=>({...x,_cat:'نقلة',_ico:'🚛',_color:'var(--green2)',_bg:'rgba(29,184,122,.12)',_amt:num(x.cost)+' ₪',_title:x.material+' · '+x.count+' نقلة',_sub:x.route||''})),
+    ...dCrush.map(x=>({...x,_cat:'كسارة',_ico:'🪨',_color:'var(--orange2)',_bg:'rgba(224,120,32,.12)',_amt:num(x.cost)+' ₪',_title:x.name,_sub:Object.entries(x.materials||{}).map(([k,v])=>k+':'+v).join(' · ')||''})),
+    ...dRent.map(x=>({...x,_cat:'معدة',_ico:'🚜',_color:'var(--purple2)',_bg:'rgba(124,92,191,.12)',_amt:num(+x.total||(+x.daily*(+x.days||0)))+' ₪',_title:x.name+' · '+(x.owner||''),_sub:(x.days||0)+' يوم'})),
+    ...dMaint.map(x=>({...x,_cat:'صيانة',_ico:'🔩',_color:'#1dd4c8',_bg:'rgba(29,212,200,.12)',_amt:num(x.cost)+' ₪',_title:x.equip+' · '+x.type,_sub:x.shop||''})),
+    ...dPurch.map(x=>({...x,_cat:'شراء',_ico:'🛒',_color:'var(--green2)',_bg:'rgba(29,184,122,.12)',_amt:num(x.cost)+' ₪',_title:x.name,_sub:x.supplier||''})),
+    ...dReceipt.map(x=>({...x,_cat:'استلام',_ico:'📦',_color:'var(--blue2)',_bg:'rgba(61,127,255,.12)',_amt:'',_title:x.name,_sub:'الكمية: '+(x.qty||1)})),
+  ].sort((a,b)=>(b.ts||0)-(a.ts||0));
+
+  if(!allOps.length){
+    document.getElementById('vw-today-ops-list').innerHTML='<div style="text-align:center;padding:2.5rem 1rem;background:var(--surface);border:1px dashed var(--border2);border-radius:14px;color:var(--text2)">'+
+      '<div style="font-size:2.5rem;margin-bottom:.6rem;opacity:.4">📭</div>'+
+      '<p style="font-size:.85rem">لا توجد عمليات مسجلة اليوم بعد</p>'+
+    '</div>';
+    return;
+  }
+
+  document.getElementById('vw-today-ops-list').innerHTML=allOps.map((x,i)=>{
+    const time=fmt(x);
+    return '<div style="background:linear-gradient(135deg,'+x._bg+',var(--surface));border:1px solid '+x._color+'33;border-radius:18px;padding:1.1rem 1.15rem;margin-bottom:.75rem;animation:fadeUp .35s ease '+(i*0.05)+'s both;box-shadow:0 4px 14px rgba(0,0,0,.15);position:relative;overflow:hidden">'+
+      // Top section with category and time
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem">'+
+        '<div style="display:flex;align-items:center;gap:.65rem">'+
+          '<div style="width:48px;height:48px;border-radius:14px;background:'+x._color+';display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;box-shadow:0 4px 12px '+x._color+'40">'+x._ico+'</div>'+
+          '<div>'+
+            '<div style="font-family:\'Readex Pro\',sans-serif;font-size:1.1rem;font-weight:800;color:'+x._color+';line-height:1.2">'+x._cat+'</div>'+
+            (time?'<div style="font-size:.72rem;color:var(--text2);margin-top:.15rem">⏰ '+time+'</div>':'')+
+          '</div>'+
+        '</div>'+
+        (x._amt?'<div style="text-align:left">'+
+          '<div style="font-family:\'Readex Pro\',sans-serif;font-weight:900;font-size:1.4rem;color:'+x._color+';line-height:1">'+x._amt+'</div>'+
+        '</div>':'')+
+      '</div>'+
+      // Title (large)
+      '<div style="font-family:\'Readex Pro\',sans-serif;font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:.4rem;line-height:1.4">'+x._title+'</div>'+
+      // Sub details (clear)
+      (x._sub?'<div style="font-size:.85rem;color:var(--text2);font-weight:500;line-height:1.5;padding:.5rem .75rem;background:rgba(0,0,0,.2);border-radius:9px;margin-bottom:.4rem">'+x._sub+'</div>':'')+
+      // Footer with user
+      (x.by?'<div style="display:flex;align-items:center;gap:.35rem;font-size:.72rem;color:var(--text3);margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--border)">'+
+        '<span style="opacity:.7">👤</span>'+
+        '<span>سجّلها: <strong style="color:var(--text2)">'+x.by+'</strong></span>'+
+      '</div>':'')+
+    '</div>';
+  }).join('');
+}
+
+// ── REPORT EXPORT ──
+function showPdfFab(){
+  // Show only on dashboard page
+  const fab=document.getElementById('pdf-fab');
+  if(fab) fab.style.display=document.getElementById('page-dash').classList.contains('active')?'block':'none';
+}
+
+function exportMonthReport(){
+  const y=viewYear, m=viewMonth;
+  const monthName=AR_MONTHS[m]+' '+y;
+
+  const mAdv=monthItems(advances,y,m);
+  const mFuel=monthItems(fuel,y,m);
+  const mTrips=monthItems(trips,y,m);
+  const mCrush=monthItems(crushers,y,m);
+  const mRent=monthItems(rentals,y,m);
+  const mMaint=monthItems(maintenance,y,m);
+  const mPurch=monthItems(purchases,y,m);
+
+  const tAdv=mAdv.reduce((s,x)=>s+(+x.amount||0),0);
+  const tFuel=mFuel.reduce((s,x)=>s+(+x.cost||0),0);
+  const tFuelL=mFuel.reduce((s,x)=>s+(+x.liters||0),0);
+  const tTrips=mTrips.reduce((s,x)=>s+(+x.cost||0),0);
+  const tTripsCnt=mTrips.reduce((s,x)=>s+(+x.count||1),0);
+  const tCrush=mCrush.reduce((s,x)=>s+(+x.cost||0),0);
+  const tRent=mRent.reduce((s,x)=>s+(+x.total||(+x.daily*(+x.days||0))||0),0);
+  const tMaint=mMaint.reduce((s,x)=>s+(+x.cost||0),0);
+  const tPurch=mPurch.reduce((s,x)=>s+(+x.cost||0),0);
+  const total=tAdv+tFuel+tTrips+tCrush+tRent+tMaint+tPurch;
+
+  const workerArr=oa(workers);
+  const today=new Date().toLocaleDateString('ar-SA');
+
+  let html='';
+  html+='<div style="background:#1a1a2e;color:#fff;padding:25px 30px;border-radius:12px;margin-bottom:20px;text-align:center">';
+  html+='<h1 style="font-size:24px;font-weight:900;color:#f0c060;margin:0">شركة العصر للحفريات</h1>';
+  html+='<p style="font-size:14px;margin-top:6px;color:#aaa">تقرير شهر '+monthName+'</p>';
+  html+='<p style="font-size:11px;margin-top:4px;color:#888">تاريخ الإصدار: '+today+'</p>';
+  html+='</div>';
+
+  // Total box
+  html+='<div style="background:linear-gradient(135deg,#f0c060,#d4a843);border-radius:12px;padding:20px 25px;margin-bottom:20px;text-align:center">';
+  html+='<div style="font-size:13px;font-weight:700;color:#000;opacity:.8">إجمالي المصروفات</div>';
+  html+='<div style="font-size:32px;font-weight:900;color:#000;margin:5px 0">'+num(total)+' ₪</div>';
+  html+='<div style="font-size:12px;color:#000;opacity:.7">'+(mAdv.length+mFuel.length+mTrips.length+mCrush.length+mRent.length+mMaint.length+mPurch.length)+' عملية مسجلة</div>';
+  html+='</div>';
+
+  // KPIs
+  html+='<table style="width:100%;border-collapse:collapse;margin-bottom:20px"><tr>';
+  const kpis=[
+    {ico:'💵',lbl:'السلف',val:tAdv,cnt:mAdv.length},
+    {ico:'⛽',lbl:'الوقود',val:tFuel,cnt:tFuelL+' لتر'},
+    {ico:'🚛',lbl:'النقلات',val:tTrips,cnt:tTripsCnt+' نقلة'},
+    {ico:'🪨',lbl:'الكسارات',val:tCrush,cnt:mCrush.length},
+    {ico:'🚜',lbl:'المعدات',val:tRent,cnt:mRent.length},
+    {ico:'🔩',lbl:'الصيانة',val:tMaint,cnt:mMaint.length},
+    {ico:'🛒',lbl:'المشتريات',val:tPurch,cnt:mPurch.length},
+  ];
+  kpis.forEach(k=>{
+    html+='<td style="background:#f8f9fa;border:1px solid #ddd;border-radius:8px;padding:10px;text-align:center;width:14%">';
+    html+='<div style="font-size:16px;margin-bottom:3px">'+k.ico+'</div>';
+    html+='<div style="font-size:12px;font-weight:700;color:#1a1a2e">'+num(k.val)+' ₪</div>';
+    html+='<div style="font-size:9px;color:#666;margin-top:2px">'+k.lbl+' ('+k.cnt+')</div>';
+    html+='</td>';
+  });
+  html+='</tr></table>';
+
+  // Sections
+  function tbl(items,title,headers,rowFn,total){
+    if(!items.length) return '';
+    let h='<div style="margin-bottom:18px">';
+    h+='<h3 style="font-size:14px;font-weight:700;color:#1a1a2e;border-bottom:2px solid #f0c060;padding-bottom:5px;margin-bottom:8px">'+title+'</h3>';
+    h+='<table style="width:100%;border-collapse:collapse;font-size:11px">';
+    h+='<tr style="background:#1a1a2e;color:#f0c060">';
+    headers.forEach(hd=>{h+='<th style="padding:6px 8px;text-align:right;font-weight:700">'+hd+'</th>';});
+    h+='</tr>';
+    items.sort((a,b)=>new Date(itemDate(a))-new Date(itemDate(b))).forEach((x,i)=>{
+      h+='<tr style="background:'+(i%2?'#f8f9fa':'#fff')+'">';
+      rowFn(x).forEach(cell=>{h+='<td style="padding:5px 8px;border-bottom:1px solid #eee;text-align:right">'+cell+'</td>';});
+      h+='</tr>';
+    });
+    if(total){
+      h+='<tr style="background:#fff3cd;font-weight:700">';
+      h+='<td colspan="'+(headers.length-1)+'" style="padding:6px 8px">الإجمالي</td>';
+      h+='<td style="padding:6px 8px;color:#e05252">'+num(total)+' ₪</td>';
+      h+='</tr>';
+    }
+    h+='</table></div>';
+    return h;
+  }
+
+  html+=tbl(mAdv,'💵 السلف',['العامل','المبلغ','الملاحظة','التاريخ','بواسطة'],
+    x=>[x.workerName,'<b style="color:#e05252">'+num(x.amount)+' ₪</b>',x.note||'—',itemDate(x),x.by||'—'],tAdv);
+
+  html+=tbl(mFuel,'⛽ الوقود',['النوع','المعدة','الكمية','التكلفة','التاريخ'],
+    x=>[x.type,x.machine||'—',x.liters+' لتر','<b style="color:#e05252">'+num(x.cost)+' ₪</b>',itemDate(x)],tFuel);
+
+  html+=tbl(mTrips,'🚛 النقلات',['المواد','عدد النقلات','المسار','التكلفة','التاريخ'],
+    x=>[x.material,x.count,x.route||'—','<b style="color:#e05252">'+num(x.cost)+' ₪</b>',itemDate(x)],tTrips);
+
+  html+=tbl(mCrush,'🪨 الكسارات',['الكسارة','المواد','التكلفة','الملاحظة','التاريخ'],
+    x=>[x.name,Object.entries(x.materials||{}).map(([k,v])=>k+':'+v).join(', ')||'—','<b style="color:#e05252">'+num(x.cost)+' ₪</b>',x.note||'—',itemDate(x)],tCrush);
+
+  html+=tbl(mRent,'🚜 المعدات المستأجرة',['المعدة','المؤجر','الأيام','اليومية','الإجمالي'],
+    x=>[x.name,x.owner||'—',x.days||0,num(x.daily||0)+' ₪','<b style="color:#e05252">'+num(+x.total||(+x.daily*(+x.days||0)))+' ₪</b>'],tRent);
+
+  html+=tbl(mMaint,'🔩 الصيانة',['المعدة','النوع','الورشة','القطع','التكلفة','التاريخ'],
+    x=>[x.equip,x.type,x.shop||'—',x.parts||'—','<b style="color:#e05252">'+num(x.cost)+' ₪</b>',itemDate(x)],tMaint);
+
+  html+=tbl(mPurch,'🛒 المشتريات',['القطعة','الكمية','المورد','التكلفة','التاريخ'],
+    x=>[x.name,x.qty||1,x.supplier||'—','<b style="color:#e05252">'+num(x.cost)+' ₪</b>',itemDate(x)],tPurch);
+
+  // Workers summary
+  if(workerArr.length){
+    html+='<div style="margin-bottom:18px">';
+    html+='<h3 style="font-size:14px;font-weight:700;color:#1a1a2e;border-bottom:2px solid #f0c060;padding-bottom:5px;margin-bottom:8px">👷 ملخص العمال</h3>';
+    html+='<table style="width:100%;border-collapse:collapse;font-size:11px">';
+    html+='<tr style="background:#1a1a2e;color:#f0c060">';
+    ['العامل','الدور','الراتب اليومي','إجمالي السلف','المتبقي'].forEach(h=>{
+      html+='<th style="padding:6px 8px;text-align:right">'+h+'</th>';
+    });
+    html+='</tr>';
+    workerArr.forEach((w,i)=>{
+      const ta=mAdv.filter(a=>a.workerName===w.name).reduce((s,a)=>s+(+a.amount||0),0);
+      const ds=+w.dailySalary||+w.salary||0;
+      const net=ds-ta;
+      html+='<tr style="background:'+(i%2?'#f8f9fa':'#fff')+'">';
+      html+='<td style="padding:5px 8px"><b>'+w.name+'</b></td>';
+      html+='<td style="padding:5px 8px">'+(w.role||'عامل')+'</td>';
+      html+='<td style="padding:5px 8px">'+num(ds)+' ₪</td>';
+      html+='<td style="padding:5px 8px;color:#e05252">'+num(ta)+' ₪</td>';
+      html+='<td style="padding:5px 8px;color:'+(net>=0?'#1db87a':'#e05252')+';font-weight:700">'+num(net)+' ₪</td>';
+      html+='</tr>';
+    });
+    html+='</table></div>';
+  }
+
+  html+='<div style="text-align:center;color:#999;font-size:11px;margin-top:30px;padding-top:15px;border-top:1px solid #eee">';
+  html+='شركة العصر للحفريات · '+today;
+  html+='</div>';
+
+  // Inject into print area
+  document.getElementById('print-area').innerHTML=html;
+
+  // Trigger print
+  setTimeout(()=>{
+    window.print();
+    showToast('💡 اختر "حفظ كملف PDF" من نافذة الطباعة','success');
+  },300);
+}
+
 // ── DAY NOTES ──
 function openDayNote(ds){
   const d=new Date(ds+'T12:00:00');
