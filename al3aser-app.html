@@ -545,10 +545,27 @@ body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-h
   <div class="page" id="page-daydetail">
     <div class="dd-topbar">
       <button class="dd-back" onclick="closeDayDetail()">←</button>
-      <div><div class="dd-page-title" id="ddp-title">تفاصيل اليوم</div><div class="dd-page-sub" id="ddp-sub"></div></div>
+      <div style="flex:1"><div class="dd-page-title" id="ddp-title">تفاصيل اليوم</div><div class="dd-page-sub" id="ddp-sub"></div></div>
+      <button id="dd-add-btn" onclick="toggleDayAddMenu()" style="background:linear-gradient(135deg,var(--gold3),var(--gold2));border:none;color:#000;font-weight:700;font-size:.78rem;padding:.45rem .85rem;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;display:flex;align-items:center;gap:.3rem">+ إضافة</button>
+    </div>
+    <!-- Quick Add Menu -->
+    <div id="dd-add-menu" style="display:none;background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:.65rem;margin:.5rem .85rem 0;box-shadow:0 8px 24px rgba(0,0,0,.4)">
+      <div style="font-size:.75rem;color:var(--text2);margin-bottom:.5rem;text-align:center;font-weight:700">إضافة عملية بتاريخ <span id="dd-target-date" style="color:var(--gold)"></span></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem">
+        <button onclick="addOpToDay('m-adv')" class="dd-add-opt" style="background:rgba(212,168,67,.12);border:1px solid rgba(212,168,67,.2);color:var(--gold);padding:.55rem;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.7rem;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:.2rem">💵<span>سلفة</span></button>
+        <button onclick="addOpToDay('m-fuel')" class="dd-add-opt" style="background:rgba(61,127,255,.12);border:1px solid rgba(61,127,255,.2);color:var(--blue2);padding:.55rem;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.7rem;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:.2rem">⛽<span>وقود</span></button>
+        <button onclick="addOpToDay('m-trip')" class="dd-add-opt" style="background:rgba(29,184,122,.12);border:1px solid rgba(29,184,122,.2);color:var(--green2);padding:.55rem;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.7rem;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:.2rem">🚛<span>نقلة</span></button>
+        <button onclick="addOpToDay('m-crusher')" class="dd-add-opt" style="background:rgba(224,120,32,.12);border:1px solid rgba(224,120,32,.2);color:var(--orange2);padding:.55rem;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.7rem;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:.2rem">🪨<span>كسارة</span></button>
+        <button onclick="addOpToDay('m-rental')" class="dd-add-opt" style="background:rgba(124,92,191,.12);border:1px solid rgba(124,92,191,.2);color:var(--purple2);padding:.55rem;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.7rem;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:.2rem">🚜<span>معدة</span></button>
+        <button onclick="addOpToDay('m-maint')" class="dd-add-opt" style="background:rgba(29,212,200,.12);border:1px solid rgba(29,212,200,.2);color:#1dd4c8;padding:.55rem;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.7rem;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:.2rem">🔩<span>صيانة</span></button>
+        <button onclick="addOpToDay('m-purchase')" class="dd-add-opt" style="background:rgba(29,184,122,.12);border:1px solid rgba(29,184,122,.2);color:var(--green2);padding:.55rem;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.7rem;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:.2rem">🛒<span>شراء</span></button>
+        <button onclick="addOpToDay('m-receipt')" class="dd-add-opt" style="background:rgba(61,127,255,.12);border:1px solid rgba(61,127,255,.2);color:var(--blue2);padding:.55rem;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.7rem;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:.2rem">📦<span>استلام</span></button>
+        <button onclick="addOpToDay('m-day-note')" class="dd-add-opt" style="background:rgba(212,168,67,.12);border:1px solid rgba(212,168,67,.2);color:var(--gold);padding:.55rem;border-radius:10px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.7rem;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:.2rem">📝<span>ملاحظة</span></button>
+      </div>
     </div>
     <div style="padding:.85rem .85rem 0">
       <div class="dd-hero" id="ddp-hero"></div>
+
       <div id="ddp-sections"></div>
     </div>
   </div>
@@ -855,6 +872,7 @@ let opsTab='advances',selMats={},pendingDel={};
 let viewYear=new Date().getFullYear(),viewMonth=new Date().getMonth();
 let _renderTimer=null;
 let prevPage='dash';
+let selectedDate=null;
 
 let USERS={
   admin:    {pass:'admin123',role:'admin',name:'الأدمن',canEdit:true},
@@ -1001,6 +1019,7 @@ function renderAll(){
     if(activePage.id==='page-ops') renderCal();
     if(activePage.id==='page-users') renderUsersList();
     if(activePage.id==='page-viewer') renderViewerDash();
+    if(activePage.id==='page-daydetail'&&window._currentViewDate) showDayDetail(window._currentViewDate);
   }
 }
 
@@ -1146,6 +1165,13 @@ function renderDashboard(){
 function showDayDetail(ds){
   const activePg=document.querySelector('.page.active');
   prevPage=activePg?.id?.replace('page-','')||'dash';
+  window._currentViewDate=ds;
+  // Hide add menu by default
+  const am=document.getElementById('dd-add-menu');
+  if(am) am.style.display='none';
+  // Hide add button if user is not admin/supervisor
+  const addBtn=document.getElementById('dd-add-btn');
+  if(addBtn) addBtn.style.display=CU.canEdit?'flex':'none';
   const dateObj=new Date(ds+'T12:00:00');
   const label=dateObj.toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   document.getElementById('ddp-title').textContent=label;
@@ -1336,7 +1362,7 @@ async function addAdvance(){
   if(!CU.canEdit){showToast('❌ ليس لديك صلاحية','error');return;}
   const w=document.getElementById('aw').value,a=+document.getElementById('aa').value,n=document.getElementById('an').value;
   if(!w||!a){showToast('❌ أكمل البيانات','error');return;}
-  const d={workerName:w,amount:a,note:n,date:today()};
+  const d={workerName:w,amount:a,note:n,date:window._addingToDate||today()};
   if(FBReady)await fbAdd('advances',d);else{d.id=Date.now()+'';advances[d.id]=d;saveL('a',advances);renderAll();}
   document.getElementById('aa').value='';document.getElementById('an').value='';
   closeModal('m-adv');showToast('✅ تم تسجيل السلفة','success');
@@ -1347,7 +1373,7 @@ async function addFuel(){
   if(!CU.canEdit){showToast('❌ ليس لديك صلاحية','error');return;}
   const t=document.getElementById('ft').value,l=+document.getElementById('fl').value,c=+document.getElementById('fc').value,m=document.getElementById('fm').value;
   if(!l){showToast('❌ أدخل الكمية','error');return;}
-  const d={type:t,liters:l,cost:c,machine:m,date:today()};
+  const d={type:t,liters:l,cost:c,machine:m,date:window._addingToDate||today()};
   if(FBReady)await fbAdd('fuel',d);else{d.id=Date.now()+'';fuel[d.id]=d;saveL('f',fuel);renderAll();}
   document.getElementById('fl').value='';document.getElementById('fc').value='';document.getElementById('fm').value='';
   closeModal('m-fuel');showToast('✅ تم تسجيل الوقود','success');
@@ -1356,7 +1382,7 @@ async function addFuel(){
 async function addTrip(){
   if(!CU.canEdit){showToast('❌ ليس لديك صلاحية','error');return;}
   const m=document.getElementById('tm').value,n=+document.getElementById('tn').value||1,c=+document.getElementById('tc').value,r=document.getElementById('tr').value,no=document.getElementById('tno').value;
-  const d={material:m,count:n,cost:c,route:r,note:no,date:today()};
+  const d={material:m,count:n,cost:c,route:r,note:no,date:window._addingToDate||today()};
   if(FBReady)await fbAdd('trips',d);else{d.id=Date.now()+'';trips[d.id]=d;saveL('t',trips);renderAll();}
   document.getElementById('tn').value='1';document.getElementById('tc').value='';document.getElementById('tr').value='';document.getElementById('tno').value='';
   closeModal('m-trip');showToast('✅ تم تسجيل النقلة','success');
@@ -1373,7 +1399,7 @@ async function addCrusher(){
   const name=document.getElementById('crn').value.trim(),cost=+document.getElementById('crc').value,note=document.getElementById('crno').value;
   if(!name){showToast('❌ أدخل اسم الكسارة','error');return;}
   const mats={};Object.keys(selMats).forEach(m=>{const i=document.getElementById('mq-'+m);if(i)mats[m]=+i.value||0;});
-  const d={name,materials:mats,cost,note,date:today()};
+  const d={name,materials:mats,cost,note,date:window._addingToDate||today()};
   if(FBReady)await fbAdd('crushers',d);else{d.id=Date.now()+'';crushers[d.id]=d;saveL('cr',crushers);renderAll();}
   document.getElementById('crn').value='';document.getElementById('crc').value='';document.getElementById('crno').value='';
   selMats={};document.querySelectorAll('.mat-chip').forEach(c=>c.classList.remove('sel'));document.getElementById('mat-qty-inputs').innerHTML='';
@@ -1392,7 +1418,7 @@ async function addRental(){
   if(!name){showToast('❌ أدخل اسم المعدة','error');return;}
   const manualTotal=+document.getElementById('rn-total').value;
   const total=manualTotal||(daily*days)||0;
-  const d={name,owner,start,end,daily,days,total,note,date:today()};
+  const d={name,owner,start,end,daily,days,total,note,date:window._addingToDate||today()};
   if(FBReady)await fbAdd('rentals',d);else{d.id=Date.now()+'';rentals[d.id]=d;saveL('r',rentals);renderAll();}
   ['rn-name','rn-owner','rn-start','rn-end','rn-daily','rn-days','rn-total','rn-note'].forEach(id=>{document.getElementById(id).value='';});
   closeModal('m-rental');showToast('✅ تم تسجيل المعدة','success');
@@ -1421,7 +1447,7 @@ async function addReceipt(){
   const date=document.getElementById('rc-date').value||today();
   const note=document.getElementById('rc-note').value.trim();
   if(!name){showToast('❌ أدخل اسم القطعة','error');return;}
-  const d={name,qty,date,note};
+  const d={name,qty,date:window._addingToDate||date,note};
   if(FBReady)await fbAdd('receipts',d);
   else{d.id=Date.now()+'';receipts[d.id]=d;saveL('rc',receipts);renderAll();}
   ['rc-name','rc-qty','rc-note'].forEach(id=>{
@@ -1444,7 +1470,7 @@ async function addPurchase(){
   const note=document.getElementById('pu-note').value.trim();
   if(!name){showToast('❌ أدخل اسم القطعة','error');return;}
   if(!cost){showToast('❌ أدخل السعر','error');return;}
-  const d={name,type,qty,cost,supplier,invoiceNo,note,date:today()};
+  const d={name,type,qty,cost,supplier,invoiceNo,note,date:window._addingToDate||today()};
   if(FBReady)await fbAdd('purchases',d);
   else{d.id=Date.now()+'';purchases[d.id]=d;saveL('p',purchases);renderAll();}
   ['pu-name','pu-qty','pu-cost','pu-supplier','pu-invoice','pu-note'].forEach(id=>{
@@ -1471,7 +1497,7 @@ async function addMaintenance(){
   const cost=+document.getElementById('mn-cost').value;
   const parts=document.getElementById('mn-parts').value.trim();
   if(!equip){showToast('❌ أدخل اسم المعدة','error');return;}
-  const d={equip,type,desc,shop,cost,parts,date:today()};
+  const d={equip,type,desc,shop,cost,parts,date:window._addingToDate||today()};
   if(FBReady)await fbAdd('maintenance',d);
   else{d.id=Date.now()+'';maintenance[d.id]=d;saveL('m',maintenance);renderAll();}
   ['mn-equip','mn-desc','mn-shop','mn-cost','mn-parts'].forEach(id=>{document.getElementById(id).value='';});
@@ -1806,6 +1832,193 @@ function exportMonthReport(){
   },300);
 }
 
+// ── DAY DETAIL: ADD OPERATIONS ──
+function toggleDayAddMenu(){
+  const m=document.getElementById('dd-add-menu');
+  const ds=window._currentViewDate||today();
+  const d=new Date(ds+'T12:00:00');
+  document.getElementById('dd-target-date').textContent=d.toLocaleDateString('ar-SA',{day:'numeric',month:'long',year:'numeric'});
+  m.style.display=m.style.display==='none'?'block':'none';
+}
+
+function addOpToDay(modalId){
+  // Hide the menu
+  document.getElementById('dd-add-menu').style.display='none';
+  // Mark which date we're targeting
+  window._addingToDate=window._currentViewDate;
+  if(modalId==='m-day-note'){
+    openDayNote(window._currentViewDate);
+    return;
+  }
+  // Open the modal
+  if(modalId==='m-adv') fillW();
+  if(modalId==='m-receipt') document.getElementById('rc-date').value=window._currentViewDate;
+  if(modalId==='m-rental'){
+    document.getElementById('rn-start').value=window._currentViewDate;
+  }
+  document.getElementById(modalId).classList.add('open');
+}
+
+// ── QUICK ADD FOR SPECIFIC DAY ──
+function quickAddForDay(modalId){
+  if(!CU.canEdit){showToast('❌ ليس لديك صلاحية','error');return;}
+  if(!selectedDate){showToast('❌ اختر يوم أولاً','error');return;}
+  // Open the modal
+  openModal(modalId);
+  // Override the date for that operation - we'll use selectedDate when adding
+  // Set date inputs if any
+  setTimeout(()=>{
+    if(modalId==='m-rental'){
+      document.getElementById('rn-start').value=selectedDate;
+    }
+    if(modalId==='m-receipt'){
+      document.getElementById('rc-date').value=selectedDate;
+    }
+  },100);
+}
+
+// Override existing add functions to use selectedDate when set
+const _origAddAdvance=addAdvance;
+addAdvance=async function(){
+  if(selectedDate&&document.getElementById('m-adv').classList.contains('open')){
+    const w=document.getElementById('aw').value,a=+document.getElementById('aa').value,n=document.getElementById('an').value;
+    if(!w||!a){showToast('❌ أكمل البيانات','error');return;}
+    const d={workerName:w,amount:a,note:n,date:selectedDate};
+    if(FBReady)await fbAdd('advances',d);
+    else{d.id=Date.now()+'';advances[d.id]=d;saveL('a',advances);renderAll();}
+    document.getElementById('aa').value='';document.getElementById('an').value='';
+    closeModal('m-adv');
+    showToast('✅ تم تسجيل السلفة لتاريخ '+selectedDate,'success');
+    setTimeout(()=>showDayDetail(selectedDate),500);
+    return;
+  }
+  return _origAddAdvance();
+};
+
+const _origAddFuel=addFuel;
+addFuel=async function(){
+  if(selectedDate&&document.getElementById('m-fuel').classList.contains('open')){
+    const t=document.getElementById('ft').value,l=+document.getElementById('fl').value,co=+document.getElementById('fc').value,m=document.getElementById('fm').value;
+    if(!l){showToast('❌ أدخل الكمية','error');return;}
+    const d={type:t,liters:l,cost:co,machine:m,date:selectedDate};
+    if(FBReady)await fbAdd('fuel',d);
+    else{d.id=Date.now()+'';fuel[d.id]=d;saveL('f',fuel);renderAll();}
+    document.getElementById('fl').value='';document.getElementById('fc').value='';document.getElementById('fm').value='';
+    closeModal('m-fuel');
+    showToast('✅ تم تسجيل الوقود لتاريخ '+selectedDate,'success');
+    setTimeout(()=>showDayDetail(selectedDate),500);
+    return;
+  }
+  return _origAddFuel();
+};
+
+const _origAddTrip=addTrip;
+addTrip=async function(){
+  if(selectedDate&&document.getElementById('m-trip').classList.contains('open')){
+    const m=document.getElementById('tm').value,n=+document.getElementById('tn').value||1,co=+document.getElementById('tc').value,r=document.getElementById('tr').value,no=document.getElementById('tno').value;
+    const d={material:m,count:n,cost:co,route:r,note:no,date:selectedDate};
+    if(FBReady)await fbAdd('trips',d);
+    else{d.id=Date.now()+'';trips[d.id]=d;saveL('t',trips);renderAll();}
+    document.getElementById('tn').value='1';document.getElementById('tc').value='';document.getElementById('tr').value='';document.getElementById('tno').value='';
+    closeModal('m-trip');
+    showToast('✅ تم تسجيل النقلة لتاريخ '+selectedDate,'success');
+    setTimeout(()=>showDayDetail(selectedDate),500);
+    return;
+  }
+  return _origAddTrip();
+};
+
+const _origAddCrusher=addCrusher;
+addCrusher=async function(){
+  if(selectedDate&&document.getElementById('m-crusher').classList.contains('open')){
+    const name=document.getElementById('crn').value.trim(),cost=+document.getElementById('crc').value,note=document.getElementById('crno').value;
+    if(!name){showToast('❌ أدخل اسم الكسارة','error');return;}
+    const mats={};Object.keys(selMats).forEach(m=>{const i=document.getElementById('mq-'+m);if(i)mats[m]=+i.value||0;});
+    const d={name,materials:mats,cost,note,date:selectedDate};
+    if(FBReady)await fbAdd('crushers',d);
+    else{d.id=Date.now()+'';crushers[d.id]=d;saveL('cr',crushers);renderAll();}
+    document.getElementById('crn').value='';document.getElementById('crc').value='';document.getElementById('crno').value='';
+    selMats={};document.querySelectorAll('.mat-chip').forEach(c=>c.classList.remove('sel'));document.getElementById('mat-qty-inputs').innerHTML='';
+    closeModal('m-crusher');
+    showToast('✅ تم تسجيل الكسارة لتاريخ '+selectedDate,'success');
+    setTimeout(()=>showDayDetail(selectedDate),500);
+    return;
+  }
+  return _origAddCrusher();
+};
+
+const _origAddMaintenance=addMaintenance;
+addMaintenance=async function(){
+  if(selectedDate&&document.getElementById('m-maint').classList.contains('open')){
+    const equip=document.getElementById('mn-equip').value.trim();
+    const type=document.getElementById('mn-type').value;
+    const desc=document.getElementById('mn-desc').value.trim();
+    const shop=document.getElementById('mn-shop').value.trim();
+    const cost=+document.getElementById('mn-cost').value;
+    const parts=document.getElementById('mn-parts').value.trim();
+    if(!equip){showToast('❌ أدخل اسم المعدة','error');return;}
+    const d={equip,type,desc,shop,cost,parts,date:selectedDate};
+    if(FBReady)await fbAdd('maintenance',d);
+    else{d.id=Date.now()+'';maintenance[d.id]=d;saveL('m',maintenance);renderAll();}
+    ['mn-equip','mn-desc','mn-shop','mn-cost','mn-parts'].forEach(id=>{document.getElementById(id).value='';});
+    closeModal('m-maint');
+    showToast('✅ تم تسجيل الصيانة لتاريخ '+selectedDate,'success');
+    setTimeout(()=>showDayDetail(selectedDate),500);
+    return;
+  }
+  return _origAddMaintenance();
+};
+
+const _origAddPurchase=addPurchase;
+addPurchase=async function(){
+  if(selectedDate&&document.getElementById('m-purchase').classList.contains('open')){
+    const name=document.getElementById('pu-name').value.trim();
+    const type=document.getElementById('pu-type').value;
+    const qty=+document.getElementById('pu-qty').value||1;
+    const cost=+document.getElementById('pu-cost').value;
+    const supplier=document.getElementById('pu-supplier').value.trim();
+    const invoiceNo=document.getElementById('pu-invoice').value.trim();
+    const note=document.getElementById('pu-note').value.trim();
+    if(!name){showToast('❌ أدخل اسم القطعة','error');return;}
+    if(!cost){showToast('❌ أدخل السعر','error');return;}
+    const d={name,type,qty,cost,supplier,invoiceNo,note,date:selectedDate};
+    if(FBReady)await fbAdd('purchases',d);
+    else{d.id=Date.now()+'';purchases[d.id]=d;saveL('p',purchases);renderAll();}
+    ['pu-name','pu-qty','pu-cost','pu-supplier','pu-invoice','pu-note'].forEach(id=>{const el=document.getElementById(id);if(el) el.value=id==='pu-qty'?'1':'';});
+    closeModal('m-purchase');
+    showToast('✅ تم تسجيل الشراء لتاريخ '+selectedDate,'success');
+    setTimeout(()=>showDayDetail(selectedDate),500);
+    return;
+  }
+  return _origAddPurchase();
+};
+
+const _origAddReceipt=addReceipt;
+addReceipt=async function(){
+  if(selectedDate&&document.getElementById('m-receipt').classList.contains('open')){
+    const name=document.getElementById('rc-name').value.trim();
+    const qty=+document.getElementById('rc-qty').value||1;
+    const note=document.getElementById('rc-note').value.trim();
+    if(!name){showToast('❌ أدخل اسم القطعة','error');return;}
+    const d={name,qty,date:selectedDate,note};
+    if(FBReady)await fbAdd('receipts',d);
+    else{d.id=Date.now()+'';receipts[d.id]=d;saveL('rc',receipts);renderAll();}
+    ['rc-name','rc-qty','rc-note'].forEach(id=>{const el=document.getElementById(id);if(el) el.value=id==='rc-qty'?'1':'';});
+    closeModal('m-receipt');
+    showToast('✅ تم تسجيل الاستلام لتاريخ '+selectedDate,'success');
+    setTimeout(()=>showDayDetail(selectedDate),500);
+    return;
+  }
+  return _origAddReceipt();
+};
+
+// Reset selectedDate when closing day detail
+const _origCloseDayDetail=closeDayDetail;
+closeDayDetail=function(){
+  selectedDate=null;
+  return _origCloseDayDetail();
+};
+
 // ── DAY NOTES ──
 function openDayNote(ds){
   const d=new Date(ds+'T12:00:00');
@@ -1969,7 +2182,7 @@ function switchPage(p,btn){
   if(p==='users')renderUsersList();
 }
 function openModal(id){if(id==='m-adv')fillW();if(id==='m-receipt'){document.getElementById('rc-date').value=today();};document.getElementById(id).classList.add('open');}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');if(['m-adv','m-fuel','m-trip','m-crusher','m-rental','m-maint','m-purchase','m-receipt'].includes(id))window._addingToDate=null;}
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
 function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='show '+type;setTimeout(()=>t.className='',2500);}
 document.getElementById('lp')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
